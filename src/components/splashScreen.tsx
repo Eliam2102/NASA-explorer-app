@@ -17,7 +17,7 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
     <View style={styles.container}>
       <StatusBar hidden />
       <Image
-        source={require('../common/assets/ImageNasa.png')}
+        source={require('../common/assets/SplashImage.png')}
         style={styles.image}
         resizeMode="cover"
       />
