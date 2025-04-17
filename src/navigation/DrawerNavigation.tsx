@@ -4,14 +4,13 @@ import React from "react";
 import { nasaLightTheme } from "../core/themeLight";
 // Módulo de iconos de FontAwesome5
 import { FontAwesome5 } from '@expo/vector-icons';
-import HomeScreen from "../presentation/screens/HomeScreen";
-import AstronomyScreen from "../presentation/screens/AstronomyScreen";
-import MediaScreen from "../presentation/screens/MediaScreen";
-import SettingsScreen from '../presentation/screens/SettingsScreen';
-import NewScreen from "../presentation/screens/NewsScreen";
-import PlanetsScreen from "../presentation/screens/PlanetsScreen";
-import { NavigationContainer } from '@react-navigation/native';
-import MoreExlporerScreen from "../presentation/screens/MoreExplorerScreen";
+import HomeScreen from "../presentation/screens/home/HomeScreen";
+import AstronomyScreen from "../presentation/screens/astronomy/AstronomyScreen";
+import MediaScreen from "../presentation/screens/media/MediaScreen";
+import NewScreen from "../presentation/screens/news/NewsScreen";
+import SettingsScreen from "../presentation/screens/config/SettingsScreen";
+import PlanetsScreen from "../presentation/screens/planets/PlanetsScreen";
+import MoreExlporerScreen from "../presentation/screens/explorer/MoreExplorerScreen";
 
 // Crea una instancia del drawer navigator
 const Drawer = createDrawerNavigator();
@@ -22,7 +21,7 @@ export default function DrawerNavigation() {
       initialRouteName="index"
       screenOptions={{
         headerStyle: {
-          backgroundColor: nasaLightTheme.primary,  // Fondo del encabezado
+          backgroundColor: '#4A4A4A',  
         },
         headerTintColor: nasaLightTheme.onPrimary,  // Color del texto en el encabezado
         drawerStyle: {
@@ -94,7 +93,7 @@ export default function DrawerNavigation() {
 
       {/* Región para ítem de Explorar más */}
       <Drawer.Screen
-        name="exploremore"
+        name="explore"
         component={MoreExlporerScreen}
         options={{
           title: 'Explorar más',
@@ -106,7 +105,7 @@ export default function DrawerNavigation() {
 
       {/* Región para ítem de Configuración */}
       <Drawer.Screen
-        name="settings"
+        name="setting"
         component={SettingsScreen}
         options={{
           title: 'Configuración',

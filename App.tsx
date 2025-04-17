@@ -1,5 +1,7 @@
 // App.tsx
-import { StatusBar } from 'react-native';2
+import { StatusBar } from 'expo-status-bar';
+
+
 import { NavigationContainer } from '@react-navigation/native';
 import DrawerNavigation from './src/navigation/DrawerNavigation';
 
