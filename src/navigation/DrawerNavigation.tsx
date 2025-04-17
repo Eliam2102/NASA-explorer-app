@@ -21,7 +21,7 @@ export default function DrawerNavigation() {
       initialRouteName="index"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#4A4A4A',  
+          backgroundColor: nasaLightTheme.primary,  
         },
         headerTintColor: nasaLightTheme.onPrimary,  // Color del texto en el encabezado
         drawerStyle: {
