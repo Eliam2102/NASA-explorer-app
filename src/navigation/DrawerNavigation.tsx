@@ -4,13 +4,13 @@ import React from "react";
 import { nasaLightTheme } from "../core/themeLight";
 // Módulo de iconos de FontAwesome5
 import { FontAwesome5 } from '@expo/vector-icons';
-import HomeScreen from "../presentation/screens/home/HomeScreen";
-import AstronomyScreen from "../presentation/screens/astronomy/AstronomyScreen";
-import MediaScreen from "../presentation/screens/media/MediaScreen";
-import NewScreen from "../presentation/screens/news/NewsScreen";
+import HomeStack from "./HomeStack";
+import AstronomyStackNavigator from "./AstronomyStack";
+import MultimediaTabsNavigator from "./MultimediaTabs";
+import BreakingNewsStackNavigator from "./NewsStack";
 import SettingsScreen from "../presentation/screens/config/SettingsScreen";
-import PlanetsScreen from "../presentation/screens/planets/PlanetsScreen";
-import MoreExlporerScreen from "../presentation/screens/explorer/MoreExplorerScreen";
+import PlanetStackNavigator from "./PlanetsStack";
+import ExploreNavigator from "./XploreMore";
 
 // Crea una instancia del drawer navigator
 const Drawer = createDrawerNavigator();
@@ -19,6 +19,7 @@ export default function DrawerNavigation() {
   return (
     <Drawer.Navigator 
       initialRouteName="index"
+      detachInactiveScreens={true} 
       screenOptions={{
         headerStyle: {
           backgroundColor: nasaLightTheme.primary,  
@@ -34,7 +35,7 @@ export default function DrawerNavigation() {
       {/* Región para ítem de Inicio */}
       <Drawer.Screen
         name="index"
-        component={HomeScreen}
+        component={HomeStack}
         options={{
           title: 'Inicio',
           drawerIcon: ({ color, size }) => (
@@ -46,7 +47,7 @@ export default function DrawerNavigation() {
       {/* Región para ítem de Astronomía */}
       <Drawer.Screen
         name="astronomy"
-        component={AstronomyScreen}
+        component={AstronomyStackNavigator}
         options={{
           title: 'Astronomía',
           drawerIcon: ({ color, size }) => (
@@ -58,7 +59,7 @@ export default function DrawerNavigation() {
       {/* Región para el ítem de Multimedia */}
       <Drawer.Screen
         name="media"
-        component={MediaScreen}
+        component={MultimediaTabsNavigator}
         options={{
           title: 'Multimedia',
           drawerIcon: ({ color, size }) => (
@@ -70,7 +71,7 @@ export default function DrawerNavigation() {
       {/* Región para ítem de Noticias */}
       <Drawer.Screen
         name="news"
-        component={NewScreen}
+        component={BreakingNewsStackNavigator}
         options={{
           title: 'Noticias',
           drawerIcon: ({ color, size }) => (
@@ -82,7 +83,7 @@ export default function DrawerNavigation() {
       {/* Región para ítem de Planetas */}
       <Drawer.Screen
         name="planets"
-        component={PlanetsScreen}
+        component={PlanetStackNavigator}
         options={{
           title: 'Planetas',
           drawerIcon: ({ color, size }) => (
@@ -94,7 +95,7 @@ export default function DrawerNavigation() {
       {/* Región para ítem de Explorar más */}
       <Drawer.Screen
         name="explore"
-        component={MoreExlporerScreen}
+        component={ExploreNavigator}
         options={{
           title: 'Explorar más',
           drawerIcon: ({ color, size }) => (

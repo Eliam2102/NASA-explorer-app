@@ -2,18 +2,15 @@ import React from "react";
 import { View, StyleSheet, Image, ScrollView, Text, Pressable } from "react-native";
 import NasaCard from "../../../components/Cards/CardHome";
 import { useNavigation } from '@react-navigation/native';
+import { DrawerNavProp } from "../../../types/types";
 
-
-//Aqui creo mi componente pantalla de inicio "maquetación"
 export default function HomeScreen() {
+  const navigation = useNavigation<DrawerNavProp>();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      
-      {/* Hero text */}
       <Text style={styles.welcomeText}>Bienvenido al Universo NASA</Text>
 
-      {/* Región de bienvenida con imagen APOd*/}
       <View style={styles.imageWrapper}>
         <Image
           source={{ uri: 'https://images-assets.nasa.gov/image/iss042e013697/iss042e013697~large.jpg' }}
@@ -25,39 +22,35 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* GRegión grid de 4 cards*/}
       <View style={styles.grid}>
         <NasaCard 
           title="Astronomía"
           iconName="meteor"
           backgroundColor="#0B3D91"
-          onPress={() => {}}
+          onPress={() => navigation.navigate("astronomy")}
         />
         <NasaCard 
           title="Multimedia"
           iconName="satellite-dish"
           backgroundColor="#0B3D91"
-          onPress={() => {}}
+          onPress={() => navigation.navigate("media")}
         />
         <NasaCard 
           title="Noticias"
           iconName="satellite"
           backgroundColor="#0B3D91"
-          onPress={() => {}}
+          onPress={() => navigation.navigate("news")}
         />
         <NasaCard 
           title="Planetas"
           iconName="globe"
           backgroundColor="#0B3D91"
-          onPress={() => {}}
+          onPress={() => navigation.navigate("planets")}
         />
-      </View>
-
-      {/* Región explorar más */}
-      <Pressable style={styles.exploreMore} onPress={() => {}}>
-        <Text style={styles.exploreText}>🔭 Explorar más</Text>
-      </Pressable>
-
+        <Pressable style={styles.exploreMore} onPress={() => navigation.navigate("explore")}>
+          <Text style={styles.exploreText}>🔭 Explorar más</Text>
+        </Pressable>
+        </View>
     </ScrollView>
   );
 }
