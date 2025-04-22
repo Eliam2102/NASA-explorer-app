@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function GalleryScreen() {
+export default function DonkiScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Vista generica para galería</Text>
+      <Text style={styles.text}>Vista generica para  DONKI</Text>
+      <Text>sE VA ANAVEGAR CON TABS</Text>
     </View>
   );
 }
