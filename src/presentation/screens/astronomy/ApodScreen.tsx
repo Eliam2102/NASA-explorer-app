@@ -6,8 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AstronomyStackNavigationProp } from './types/types';
 import CardImage from '../../../components/Cards/CardImage';
 import { useApodViewModel } from '../../viewmodels/astronmy/apod/viewmodelAs';
-import SkeletonCardImage from '../../../components/skeleton/CardSkeleton';
-import { Animated } from 'react-native';
+import { Animated, TouchableWithoutFeedback} from 'react-native';
 import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
 import ModalApod from '../../../components/Modals/ModalApod';
@@ -47,22 +46,29 @@ export default function ApodScreen() {
   }
 }, [loading]);
 
-  const handleDateChange = (event: any, date?: Date) => {
-    setShowPicker(Platform.OS === 'ios');
-    if (date) {
-      setSelectedDate(date);
-      const formattedDate = formatDate(date);
-      const normalizedSelectedDate = formattedDate.split('T')[0];
-      const normalizedLastFetchedDate = lastFetchedDate.current?.split('T')[0];
-      if (normalizedSelectedDate !== normalizedLastFetchedDate) {
-        console.log("Fecha diferente, se hace fetch");
-        lastFetchedDate.current = formattedDate;
-        fetchApodItem(formattedDate);
-      } else {
-        console.error('Verifica la fecha:')
-      }
+const handleDateChange = (event: any, date?: Date) => {
+  setShowPicker(Platform.OS === 'ios');
+
+  if (event.type === 'dismissed') {
+    // Usuario canceló el picker → no hacer nada
+    return;
+  }
+
+  if (date) {
+    setSelectedDate(date);
+    const formattedDate = formatDate(date);
+    const normalizedSelectedDate = formattedDate.split('T')[0];
+    const normalizedLastFetchedDate = lastFetchedDate.current?.split('T')[0];
+    
+    if (normalizedSelectedDate !== normalizedLastFetchedDate) {
+      console.log("Fecha diferente, se hace fetch");
+      lastFetchedDate.current = formattedDate;
+      fetchApodItem(formattedDate);
+    } else {
+      console.warn('Misma fecha seleccionada, no se realiza fetch');
     }
-  };
+  }
+};
 
   const formatDate = (date: Date) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -130,7 +136,7 @@ export default function ApodScreen() {
 
       {/* Skeleton y contenido */}
           {!loading && itemApod?.url && (
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
               <Animated.View style={[styles.cardContainer, { opacity: contentOpacity }]}>
                 <CardImage
                   url={itemApod.url}
@@ -144,7 +150,7 @@ export default function ApodScreen() {
                   }}
                 />
               </Animated.View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           )}
 
 
