@@ -6,11 +6,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 import HomeStack from "./HomeStack";
 import AstronomyStackNavigator from "./AstronomyStack";
-// import MultimediaTabsNavigator from "./MultimediaTabs";
-// import BreakingNewsStackNavigator from "./NewsStack";
+import MultimediaTabsNavigator from "./MultimediaTabs";
+import BreakingNewsStackNavigator from "./NewsStack";
 import SettingsScreen from "../presentation/screens/config/SettingsScreen";
-// import PlanetStackNavigator from "./PlanetsStack";
-// import ExploreNavigator from "./XploreMore";
+import PlanetStackNavigator from "./PlanetsStack";
+import ExploreNavigator from "./XploreMore";
 
 const Drawer = createDrawerNavigator();
 
@@ -74,7 +74,7 @@ export default function DrawerNavigation() {
           ),
         }}
       />
-      {/* <Drawer.Screen
+      <Drawer.Screen
         name="media"
         component={MultimediaTabsNavigator}
         options={{
@@ -84,6 +84,7 @@ export default function DrawerNavigation() {
           ),
         }}
       />
+      
       <Drawer.Screen
         name="news"
         component={BreakingNewsStackNavigator}
@@ -94,6 +95,7 @@ export default function DrawerNavigation() {
           ),
         }}
       />
+      
       <Drawer.Screen
         name="planets"
         component={PlanetStackNavigator}
@@ -113,7 +115,7 @@ export default function DrawerNavigation() {
             <FontAwesome5 name="rocket" size={size} color={colors.primary} />
           ),
         }}
-      /> */}
+      /> 
       <Drawer.Screen
         name="setting"
         component={SettingsScreen}

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import { nasaLightTheme } from "../../../core/themeLight";
+import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { BreakingNewsStackNavigationProp } from './types/types'; 
 import { New } from "./interface/New";
+import { Text, useTheme, Surface } from "react-native-paper";
 //exteder la interface
 
 interface NewsItemProps extends New {
@@ -23,6 +23,8 @@ const NewsItem = ({ title, description, link, onPress }: NewsItemProps) => {
 
 
 export default function NewScreen() {
+  //usar tema
+  const theme = useTheme();
   const [newsData, setNewsData] = useState<any[]>([]); // Aquí usaremos el tipo de respuesta del parser RSS
   const [loading, setLoading] = useState(true);
 
@@ -48,9 +50,9 @@ export default function NewScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Últimas Noticias</Text>
+      <Text style={[styles.header, { color: theme.colors.primary }]}>Últimas Noticias</Text>
       {loading ? (
-        <Text style={styles.loadingText}>Cargando noticias...</Text>
+        <Text style={[styles.loadingText, {color: theme.colors.primary}]}>Cargando noticias...</Text>
       ) : (
         <FlatList
           data={newsData}
@@ -72,28 +74,26 @@ export default function NewScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: nasaLightTheme.background, // Usar el fondo blanco del tema
+    flex: 1,// Usar el fondo blanco del tema
     paddingTop: 20,
     paddingHorizontal: 10,
   },
   header: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: nasaLightTheme.primary, // Texto en azul oscuro
+    fontWeight: "bold", // Texto en azul oscuro
     marginBottom: 20,
   },
   loadingText: {
     fontSize: 16,
-    color: nasaLightTheme.textSecondary, // Texto secundario gris
+     // Texto secundario gris
   },
   newsItem: {
     padding: 10,
     marginBottom: 10,
-    backgroundColor: nasaLightTheme.surface, // Fondo de tarjeta
+    // backgroundColor: nasaLightTheme.surface, // Fondo de tarjeta
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: nasaLightTheme.border, // Borde sutil
+    // borderColor: nasaLightTheme.border, // Borde sutil
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -102,11 +102,11 @@ const styles = StyleSheet.create({
   newsTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: nasaLightTheme.textPrimary, // Texto primario en azul oscuro
+    // color: nasaLightTheme.textPrimary, // Texto primario en azul oscuro
   },
   newsDescription: {
     fontSize: 14,
-    color: nasaLightTheme.textSecondary, // Texto secundario en gris
+    // color: nasaLightTheme.textSecondary, // Texto secundario en gris
     marginTop: 5,
   },
 });

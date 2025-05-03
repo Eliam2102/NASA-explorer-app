@@ -1,67 +1,82 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native'; // <-- SOLO lo necesario
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { ApodItem } from '../../domain/entidades/apodItem';
 import { useTheme } from 'react-native-paper';
-import { WebView } from 'react-native-webview'; //impor el modulo de webview
+import { WebView } from 'react-native-webview';
 
 const fallbackImage = 'https://via.placeholder.com/300x220.png?text=No+Image';
 
-//validar la url para mostrar y que, algunos, traen video y no imagen, entonces para que se pueda apreciar mejor
 function isImage(url: string) {
   return /\.(jpg|jpeg|png|gif)$/i.test(url);
 }
 
-//validar si es video, esta la url incluye el prefijo de YUTOBE
 function isYouTubeVideo(url: string) {
   return /youtube\.com|youtu\.be/i.test(url);
 }
 
-//Exportar mi funcion JSX de mi compoente cARDiMAGE
 export default function CardImage({ url, date, title, copyright, explanation, onPress }: ApodItem & { onPress?: () => void }) {
   const theme = useTheme();
   const [imageUri, setImageUri] = useState(url || fallbackImage);
+  const [showVideo, setShowVideo] = useState(false);
+  const lastTap = useRef<number>(0);
 
-  //se agrega el manejador de imagén por si esta no tiene imagen par amostrar una imagén por defecto.
-  //Seteando un imageuri  CON EL FALLBCK IMAGEN DECLARADO ANTES
   const handleImageError = () => {
     setImageUri(fallbackImage);
   };
 
+  const handleDoubleTap = () => {
+    const now = Date.now();
+    if (lastTap.current && now - lastTap.current < 300) {
+      // Detected double tap
+      setShowVideo(true);
+    } else {
+      lastTap.current = now;
+    }
+  };
+
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.card, { backgroundColor: theme.colors.surface }]}
       activeOpacity={0.8}
-      onPress={onPress} 
+      onPress={onPress}
     >
       {url ? (
         isImage(url) ? (
-          <Image 
-            source={{ uri: imageUri }} 
-            style={styles.image} 
-            resizeMode="cover" 
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.image}
+            resizeMode="cover"
             onError={handleImageError}
           />
         ) : isYouTubeVideo(url) ? (
-          <View style={styles.videoContainer}>
-            <WebView
-              source={{ uri: url }}
-              style={styles.webview}
-              javaScriptEnabled
-              domStorageEnabled
-            />
-          </View>
+          <TouchableWithoutFeedback onPress={handleDoubleTap}>
+            <View style={styles.videoContainer}>
+              {showVideo ? (
+                <WebView
+                  source={{ uri: url }}
+                  style={styles.webview}
+                  javaScriptEnabled
+                  domStorageEnabled
+                />
+              ) : (
+                <View style={[styles.videoContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+                  <Text style={{ color: '#fff' }}>Doble toque para reproducir video</Text>
+                </View>
+              )}
+            </View>
+          </TouchableWithoutFeedback>
         ) : (
-          <Image 
-            source={{ uri: fallbackImage }} 
-            style={styles.image} 
-            resizeMode="cover" 
+          <Image
+            source={{ uri: fallbackImage }}
+            style={styles.image}
+            resizeMode="cover"
           />
         )
       ) : (
-        <Image 
-          source={{ uri: fallbackImage }} 
-          style={styles.image} 
-          resizeMode="cover" 
+        <Image
+          source={{ uri: fallbackImage }}
+          style={styles.image}
+          resizeMode="cover"
         />
       )}
 

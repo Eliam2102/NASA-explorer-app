@@ -10,15 +10,13 @@ import {
   Linking,
   Dimensions
 } from 'react-native';
-import { ModalApodProps } from '../interfaces/modalApod'; // interfaz que defines tú
-import { WebView } from 'react-native-webview'; // Importa WebView
+import { ModalApodProps } from '../interfaces/modalApod';
+import WebView from 'react-native-webview';
 
 const ModalApod = ({ visible, onClose, apodItem }: ModalApodProps) => {
-  if (!apodItem) return null;
-
-  const isYouTubeVideo =
-    apodItem.url?.includes('youtube.com') || apodItem.url?.includes('youtu.be');
-  const isImage = apodItem.url?.match(/\.(jpeg|jpg|gif|png)$/i);
+  if (!apodItem) return null; 
+  const isYouTubeVideo = apodItem?.url?.includes('youtube.com') || apodItem?.url?.includes('youtu.be');
+  const isImage = apodItem?.url?.match(/\.(jpeg|jpg|gif|png)$/i);
 
   return (
     <Modal
@@ -34,11 +32,11 @@ const ModalApod = ({ visible, onClose, apodItem }: ModalApodProps) => {
 
             {isYouTubeVideo ? (
               <WebView
-                source={{ uri: apodItem.url }}
-                style={styles.webview}
-                javaScriptEnabled
-                domStorageEnabled
-              />
+              source={{ uri: apodItem.url }}
+              style={styles.webview}
+              javaScriptEnabled
+              domStorageEnabled
+            />
             ) : isImage ? (
               <Image source={{ uri: apodItem.url }} style={styles.image} resizeMode="cover" />
             ) : (
@@ -57,10 +55,7 @@ const ModalApod = ({ visible, onClose, apodItem }: ModalApodProps) => {
 
             <Text style={styles.label}>
               URL:{" "}
-              <Text
-                style={[styles.value, styles.link]}
-                onPress={() => Linking.openURL(apodItem.url)}
-              >
+              <Text style={[styles.value, styles.link]} onPress={() => Linking.openURL(apodItem.url)}>
                 {apodItem.url}
               </Text>
             </Text>
@@ -86,6 +81,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
     padding: 20,
   },
+  webview: {
+    height: 220,
+    borderRadius: 10,
+    marginBottom: 15,
+  },
   modalContainer: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -108,11 +108,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     alignSelf: 'center',
   },
-  webview: {
-    width: width - 80,
-    height: 220,
+  videoLink: {
+    color: '#007AFF',
+    fontSize: 16,
     marginBottom: 15,
-    alignSelf: 'center',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
   invalidMedia: {
     fontSize: 14,
