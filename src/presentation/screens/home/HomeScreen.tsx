@@ -1,56 +1,69 @@
-import React from "react";
-import { View, StyleSheet, Image, ScrollView, Text, Pressable } from "react-native";
-import NasaCard from "../../../components/Cards/CardHome";
+import React, { useEffect } from "react";
+import { View, StyleSheet, Image, ScrollView, Pressable } from "react-native";
+import { Text, useTheme, Surface, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavProp } from "../../../types/types";
+import NasaCard from "../../../components/Cards/CardHome";
+import { useApodViewModelImage } from "../../viewmodels/astronmy/apod/nowImageApod";
 
 export default function HomeScreen() {
   const navigation = useNavigation<DrawerNavProp>();
+  const theme = useTheme();
+  //instancia de mi vieewmodel
+  const today = new Date().toISOString().split("T")[0];
+  const { imageUrl, loading } = useApodViewModelImage(today);
+  
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.welcomeText}>Bienvenido al Universo NASA</Text>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text variant="headlineLarge" style={[styles.welcomeText, { color: theme.colors.onSurface }]}>
+        Bienvenido al Universo NASA
+      </Text>
 
       <View style={styles.imageWrapper}>
-        <Image
-          source={{ uri: 'https://images-assets.nasa.gov/image/iss042e013697/iss042e013697~large.jpg' }}
-          style={styles.heroImage}
-          resizeMode="cover"
-        />
-        <View style={styles.labelContainer}>
-          <Text style={styles.labelText}>Imagen del día</Text>
-        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        ) : (
+          <>
+            <Image
+              source={{ uri: imageUrl || 'https://via.placeholder.com/600x400.png?text=Cargando+imagen...' }}
+              style={styles.heroImage}
+              resizeMode="cover"
+            />
+            <Surface style={[styles.labelContainer, { backgroundColor: theme.colors.elevation.level1 }]}>
+              <Text style={[styles.labelText, { color: theme.colors.onSurface }]}>Imagen del día</Text>
+            </Surface>
+          </>
+        )}
       </View>
 
       <View style={styles.grid}>
         <NasaCard 
           title="Astronomía"
           iconName="meteor"
-          backgroundColor="#0B3D91"
+          backgroundColor={theme.colors.primary}
           onPress={() => navigation.navigate("astronomy")}
         />
         <NasaCard 
           title="Multimedia"
           iconName="satellite-dish"
-          backgroundColor="#0B3D91"
+          backgroundColor={theme.colors.primary}
           onPress={() => navigation.navigate("media")}
         />
         <NasaCard 
-          title="Noticias"
-          iconName="satellite"
-          backgroundColor="#0B3D91"
-          onPress={() => navigation.navigate("news")}
+          title="Más"
+          iconName="rocket"
+          backgroundColor={theme.colors.primary}
+          onPress={() => navigation.navigate("explore")}
         />
         <NasaCard 
           title="Planetas"
           iconName="globe"
-          backgroundColor="#0B3D91"
+          backgroundColor={theme.colors.primary}
           onPress={() => navigation.navigate("planets")}
         />
-        <Pressable style={styles.exploreMore} onPress={() => navigation.navigate("explore")}>
-          <Text style={styles.exploreText}>🔭 Explorar más</Text>
-        </Pressable>
-        </View>
+        
+      </View>
     </ScrollView>
   );
 }
@@ -60,12 +73,9 @@ const styles = StyleSheet.create({
     paddingVertical: 50,
     paddingHorizontal: 20,
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
   },
   welcomeText: {
-    fontSize: 26,
     fontWeight: "bold",
-    color: "#0B3D91",
     textAlign: "center",
     marginBottom: 28,
   },
@@ -85,21 +95,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: -1,
-    backgroundColor: '#ffff',
     borderRadius: 30,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
     elevation: 2,
   },
   labelText: {
-    color: 'black',
     fontWeight: '600',
     fontSize: 16,
   },
@@ -109,9 +110,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 16,
     marginBottom: 30,
+    marginTop: 35
   },
   exploreMore: {
-    backgroundColor: "#E6EEF9",
     paddingVertical: 10,
     paddingHorizontal: 24,
     borderRadius: 25,
@@ -120,6 +121,5 @@ const styles = StyleSheet.create({
   exploreText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#0B3D91",
   },
 });
