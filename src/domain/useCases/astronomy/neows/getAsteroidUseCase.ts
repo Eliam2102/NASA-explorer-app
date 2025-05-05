@@ -1,4 +1,4 @@
-import { Asteroid } from "../../../entidades/neows/asteroid";
+import { Asteroid } from "../../../entidades/astronomy/neows/asteroid";
 import { NeowsRepository } from "../../../repository/astronomy/neows/getAsteroidRepository";
 
 export class GetAsteroidsPaginatedUseCase {

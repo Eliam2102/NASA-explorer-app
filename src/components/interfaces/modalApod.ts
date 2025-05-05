@@ -1,4 +1,4 @@
-import { ApodItem } from "../../domain/entidades/apodItem";
+import { ApodItem } from "../../domain/entidades/astronomy/apod/apodItem";
 
 export interface ModalApodProps {
     visible: boolean;

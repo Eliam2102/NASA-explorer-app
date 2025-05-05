@@ -7,7 +7,6 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import HomeStack from "./HomeStack";
 import AstronomyStackNavigator from "./AstronomyStack";
 import MultimediaTabsNavigator from "./MultimediaTabs";
-import BreakingNewsStackNavigator from "./NewsStack";
 import SettingsScreen from "../presentation/screens/config/SettingsScreen";
 import PlanetStackNavigator from "./PlanetsStack";
 import ExploreNavigator from "./XploreMore";
@@ -84,23 +83,13 @@ export default function DrawerNavigation() {
           ),
         }}
       />
-      
-      <Drawer.Screen
-        name="news"
-        component={BreakingNewsStackNavigator}
-        options={{
-          title: 'Noticias',
-          drawerIcon: ({ size }) => (
-            <FontAwesome5 name="satellite" size={size} color={colors.primary} />
-          ),
-        }}
-      />
+
       
       <Drawer.Screen
         name="planets"
         component={PlanetStackNavigator}
         options={{
-          title: 'Planetas',
+          title: 'Marte',
           drawerIcon: ({ size }) => (
             <FontAwesome5 name="globe" size={size} color={colors.primary} />
           ),

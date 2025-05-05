@@ -1,10 +1,10 @@
-import ApiService from "../../../common/api/conection";
+import { createApiInstance } from "../../../common/api/conection";
 import { MediaSearchParams } from "../../../domain/entidades/media/mediaSearchParams";
 import { MediaModel } from "../../models/media/newModel";
 
 export class GetItemsMediaNasa {
   async fetchItems(params: MediaSearchParams): Promise<MediaModel> {
-    const api = ApiService.getInstance('https://images-api.nasa.gov');
+    const api = createApiInstance('https://images-api.nasa.gov');
   
     const cleanParams = Object.fromEntries(
       Object.entries({

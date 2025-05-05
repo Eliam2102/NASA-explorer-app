@@ -6,6 +6,7 @@ import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
 import { SearchFilters } from '../../../components/searchFilters/handlerSeacrhFilters';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import { color } from 'framer-motion';
 
 
 //creación para manejar dos columnas indexada
@@ -67,9 +68,9 @@ export default function GalleryScreen() {
         ListHeaderComponent={<SearchFilters onSearch={handleSearch} />}
         contentContainerStyle={styles.gallery}
         renderItem={({ item, index }) => (
-          <TouchableOpacity onPress={() => openImage(index)} style={styles.imageContainer}>
+          <TouchableOpacity onPress={() => openImage(index)} style={[styles.imageContainer, {backgroundColor: theme.colors.surface}]}>
             <Image source={{ uri: item.thumbnailUrl }} style={styles.image} />
-            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.imageTitle, {color: theme.colors.primary}]}>{item.title}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.imageTitle, {color: theme.colors.onSurface}]}>{item.title}</Text>
           </TouchableOpacity>
         )}
         onEndReached={loadMoreImages}

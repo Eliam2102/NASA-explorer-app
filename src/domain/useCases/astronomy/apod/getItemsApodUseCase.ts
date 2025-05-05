@@ -1,4 +1,4 @@
-import { ApodItem } from "../../../entidades/apodItem";
+import { ApodItem } from "../../../entidades/astronomy/apod/apodItem";
 import { ItemsApodRepository } from "../../../repository/astronomy/apod/getItemsApodRepository";
 //aqui unicamente importamos la entidad del dominio
 //y de igual manera el repositorio

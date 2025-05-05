@@ -1,4 +1,4 @@
-import { Asteroid } from "../../../../domain/entidades/neows/asteroid";
+import { Asteroid } from "../../../../domain/entidades/astronomy/neows/asteroid";
 import { useState } from "react";
 import { GetAsteroidsPaginatedUseCase } from '../../../../domain/useCases/astronomy/neows/getAsteroidUseCase';
 import { NeowsRepositoryImpl } from "../../../../data/repository_impl/astronomy/neows/neowsRepositoryImple";

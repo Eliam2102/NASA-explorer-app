@@ -1,4 +1,4 @@
-import { ApodItem } from '../../../entidades/apodItem';
+import { ApodItem } from '../../../entidades/astronomy/apod/apodItem';
 
 
 //creo la interface de mi repositorio

@@ -2,15 +2,20 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { CardH } from "../interfaces/Card";
+import { useTheme } from "react-native-paper";
+import { color } from 'framer-motion';
 
 const NasaCard: React.FC<CardH> = ({ title, iconName, onPress, backgroundColor = '#ffffff', image }) => {
+
+  const theme = useTheme();
+
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.card, { backgroundColor }]}>
+    <TouchableOpacity onPress={onPress} style={[styles.card, { backgroundColor: theme.colors.surface}]}>
       <View style={styles.content}>
         <View style={styles.iconWrapper}>
-          <FontAwesome5 name={iconName} size={28} color="#000" style={styles.icon} />
+          <FontAwesome5 name={iconName} size={28} color="#000" style={[styles.icon, {color: theme.colors.onSurface}]} />
         </View>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, {color: theme.colors.onSurface}]}>{title}</Text>
       </View>
 
       {image && <Image source={image} style={styles.image} />}

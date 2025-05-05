@@ -8,13 +8,13 @@ const CardThumbnail: React.FC<CardThumbnailProps> = ({ thumbnailUrl, title, onPr
   const theme = useTheme();
 
   return (
-    <Pressable onPress={onPress} style={[styles.card, { backgroundColor: theme.colors.onPrimary }]}>
-      <Image source={{ uri: thumbnailUrl }} style={styles.thumbnail} resizeMode="cover" />
+    <Pressable onPress={onPress} style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+      <Image source={{ uri: thumbnailUrl }} style={[styles.thumbnail, {backgroundColor: theme.colors.onSurface}]} resizeMode="cover" />
       {title && (
         <View style={styles.titleContainer}>
           <Text
             numberOfLines={1}
-            style={[styles.title, { color: theme.colors.primary }]}
+            style={[styles.title, { color: theme.colors.onSurface }]}
           >
             {title}
           </Text>
