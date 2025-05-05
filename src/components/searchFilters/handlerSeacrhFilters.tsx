@@ -21,14 +21,14 @@ const filterOptions = [
 export const SearchFilters = ({ onSearch }: Props) => {
   // manejo del tema
   const theme = useTheme();
-  //constantes para poder manejar el estado
+  //constantes para poder mnajear el estado 
   const [collapsed, setCollapsed] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState('query');
   const [inputValue, setInputValue] = useState('');
   const [yearStart, setYearStart] = useState('');
   const [yearEnd, setYearEnd] = useState('');
 
-  // manejador de los filtros para dar submit
+  //manejador de losfiltros para darle submit
   const handleSubmit = () => {
     const filters: any = { mediaType: 'image' };
 
@@ -40,37 +40,38 @@ export const SearchFilters = ({ onSearch }: Props) => {
     }
 
     onSearch(filters);
-    setCollapsed(true); // este es para ocultar los filtros después de hacer la búsqueda
+    setCollapsed(true);//este es para ocultar los filtros para cuando se realice una busqueda
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={styles.toggleButton}
+        style={[styles.toggleButton]}
         onPress={() => setCollapsed(!collapsed)}
       >
-        <Text style={[styles.toggleButtonText, { color: theme.colors.primary }]}>
+        <Text style={[styles.toggleButtonText,{color: theme.colors.onSurface}]}>
           {collapsed ? 'Mostrar filtros' : 'Ocultar filtros'}
         </Text>
       </TouchableOpacity>
 
       {!collapsed && (
         <View style={styles.filtersContainer}>
-          <Text style={[styles.label, { color: theme.colors.primary }]}>Filtrar por:</Text>
+          <Text style={[styles.label, {color: theme.colors.primary}]}>Filtrar por:</Text>
 
           {filterOptions.map((option) => (
             <TouchableOpacity
-              key={option.key}
-              onPress={() => setSelectedFilter(option.key)}
-              style={[
-                styles.option,
-                { backgroundColor: selectedFilter === option.key ? '#007aff' : '#8AB4F8' },
-              ]}
-            >
-              <Text style={[styles.optionText, { color: theme.colors.textPrimary }]}>
-                {option.label}
-              </Text>
-            </TouchableOpacity>
+            key={option.key}
+            onPress={() => setSelectedFilter(option.key)}
+            style={[
+              styles.option,
+              { color: theme.colors.secondary }, 
+              selectedFilter === option.key && styles.selectedOption, // solo si está seleccionado
+            ]}
+          >
+            <Text style={[styles.optionText, { color: theme.colors.textPrimary }]}>
+              {option.label}
+            </Text>
+          </TouchableOpacity>
           ))}
 
           {selectedFilter === 'yearRange' ? (

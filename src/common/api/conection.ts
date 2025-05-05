@@ -1,31 +1,30 @@
 import axios, { AxiosInstance } from 'axios';
 
+// Servicio Singleton (opcional si quieres seguir usándolo)
 export class ApiService {
   private static instance: AxiosInstance | null = null;
 
-  private constructor(baseURL: string) {
-    ApiService.instance = axios.create({
-      baseURL,
-      timeout: 5000,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  // Le pasas la baseURL la primera vez
   public static getInstance(baseURL?: string): AxiosInstance {
     if (!ApiService.instance) {
-      if (!baseURL) {
-        throw new Error("ApiService no ha sido inicializado. Se requiere baseURL.");
-      }
-      new ApiService(baseURL);
+      ApiService.instance = axios.create({
+        baseURL,
+        timeout: 5000,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
-    return ApiService.instance!;
+    return ApiService.instance;
   }
 
-  // Método para reiniciar la instancia si necesitas cambiar de API
   public static resetInstance(): void {
     ApiService.instance = null;
   }
 }
 
-export default ApiService;
+// ✅ NUEVA función para crear una instancia independiente
+export function createApiInstance(baseURL: string): AxiosInstance {
+  return axios.create({
+    baseURL,
+    timeout: 5000,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}

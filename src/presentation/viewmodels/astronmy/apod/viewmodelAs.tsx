@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ApodItem } from "../../../../domain/entidades/apodItem";
+import { ApodItem } from "../../../../domain/entidades/astronomy/apod/apodItem";
 import { GetItemsApodUseCase } from "../../../../domain/useCases/astronomy/apod/getItemsApodUseCase";
 import { apodItemRepositoryImple } from "../../../../data/repository_impl/astronomy/apod/apodItemRepositoryImple";
 

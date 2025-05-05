@@ -1,4 +1,9 @@
 export interface Planet {
+    date: string | undefined;
+    cameraName: string | undefined;
+    roverName: string | undefined;
+    sol: any;
+    status: string | undefined;
     id: string;
     name: string;
     mass?: number; 

@@ -1,31 +1,45 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from "react-native";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
-import { PlanetStackParamList } from "./types/types"; // Asegúrate de importar los tipos correctos
+import { PlanetStackParamList } from "./types/types";
+import ImageViewer from "react-native-image-zoom-viewer"; // Asegúrate de importar correctamente
 
-type DetailRouteProp = RouteProp<PlanetStackParamList, "DetailsPlanetScreen">; // Obtenemos el tipo correcto para la ruta
+type DetailRouteProp = RouteProp<PlanetStackParamList, "DetailsPlanetScreen">;
 
 export default function DetailPlanetScreen() {
-  const route = useRoute<DetailRouteProp>(); // Usamos useRoute para obtener el parámetro
-  const { planet } = route.params; // Obtenemos el planeta del parámetro
-  const navigation = useNavigation(); // Usamos useNavigation para acceder a la función goBack
+  const route = useRoute<DetailRouteProp>();
+  const { planet } = route.params;
+  const navigation = useNavigation();
+  const [isImageViewerVisible, setIsImageViewerVisible] = useState(false);
 
   return (
     <View style={styles.container}>
       {/* Botón de Regresar */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()} // Función para regresar a la pantalla anterior
-      >
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Regresar</Text>
       </TouchableOpacity>
 
-      <Image
-        source={{ uri: planet.imageUrl }}
-        style={styles.planetImage}
-      />
+      {/* Imagen clickeable */}
+      <TouchableOpacity onPress={() => setIsImageViewerVisible(true)}>
+        <Image source={{ uri: planet.imageUrl }} style={styles.planetImage} />
+      </TouchableOpacity>
+
+      {/* Modal para el zoom viewer */}
+      <Modal visible={isImageViewerVisible} transparent={true}>
+        <ImageViewer
+          imageUrls={[{ url: planet.imageUrl  ?? '' }]}
+          onClick={() => setIsImageViewerVisible(false)} // cerrar con tap
+          enableSwipeDown
+          onSwipeDown={() => setIsImageViewerVisible(false)}
+        />
+      </Modal>
+
+      <Text style={styles.planetDescription}>Datos de la foto:</Text>
       <Text style={styles.planetName}>{planet.name}</Text>
-      <Text style={styles.planetDescription}>{planet.description || "Descripción no disponible."}</Text>
+      <Text style={styles.planetDescription}>Cámara: {planet.cameraName}</Text>
+      <Text style={styles.planetDescription}>Estatus: {planet.status}</Text>
+      <Text style={styles.planetDescription}>Fecha: {planet.date}</Text>
+      <Text style={styles.planetDescription}>Rover: {planet.roverName}</Text>
     </View>
   );
 }

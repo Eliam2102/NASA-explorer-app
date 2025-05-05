@@ -5,7 +5,6 @@ export type RootDrawerParamList = {
   index: undefined;
   astronomy: undefined;
   media: undefined;
-  news: undefined;
   planets: undefined;
   explore: undefined;
   setting: undefined;

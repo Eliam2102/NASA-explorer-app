@@ -10,7 +10,7 @@ import { Animated, TouchableWithoutFeedback} from 'react-native';
 import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
 import ModalApod from '../../../components/Modals/ModalApod';
-import { ApodItem } from '../../../domain/entidades/apodItem';
+import { ApodItem } from '../../../domain/entidades/astronomy/apod/apodItem';
 
 
 // Declaro mi función JSX para el componente ApodScreen
@@ -103,8 +103,8 @@ const handleDateChange = (event: any, date?: Date) => {
 
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.subTitle, { color: theme.colors.secondary }]}>Bienvenido a la sección de astronomía</Text>
-          <Text style={[styles.subTitle, { color: theme.colors.secondary }]}>Aquí encontrarás las mejores fotos y datos.</Text>
+          <Text style={[styles.subTitle, { color: theme.colors.onSurface }]}>Bienvenido a la sección de astronomía</Text>
+          <Text style={[styles.subTitle, { color: theme.colors.onSurface }]}>Aquí encontrarás las mejores fotos y datos.</Text>
         </View>
 
         {/* Date Picker */}
@@ -114,7 +114,7 @@ const handleDateChange = (event: any, date?: Date) => {
             onPress={() => setShowPicker(true)}
             style={[styles.dateButton, { backgroundColor: theme.colors.primary }]}
           >
-            <Text style={[styles.dateButtonText, { color: theme.colors.onPrimary }]}>
+            <Text style={[styles.dateButtonText, { color: theme.colors.onSurface }]}>
               {formatDate(selectedDate)}
             </Text>
           </TouchableOpacity>

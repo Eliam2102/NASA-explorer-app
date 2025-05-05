@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { ApodItem } from '../../domain/entidades/apodItem';
+import { ApodItem } from '../../domain/entidades/astronomy/apod/apodItem';
 import { useTheme } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
 

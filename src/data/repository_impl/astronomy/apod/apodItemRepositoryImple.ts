@@ -1,6 +1,6 @@
 import { ItemsApodRepository } from "../../../../domain/repository/astronomy/apod/getItemsApodRepository";
 import { GetItemsApods } from "../../../service/astronomy/apod/apoService";
-import { ApodItem } from "../../../../domain/entidades/apodItem";
+import { ApodItem } from "../../../../domain/entidades/astronomy/apod/apodItem";
 import { ApodModel } from "../../../models/astronomy/apod/apodModel";
 
 export class apodItemRepositoryImple implements ItemsApodRepository {

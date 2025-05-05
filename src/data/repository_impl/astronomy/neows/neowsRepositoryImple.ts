@@ -1,6 +1,6 @@
 // infrastructure/repositories/NeoWsRepositoryImpl.ts
 import { NeowsRepository } from "../../../../domain/repository/astronomy/neows/getAsteroidRepository";
-import { Asteroid } from "../../../../domain/entidades/neows/asteroid";
+import { Asteroid } from "../../../../domain/entidades/astronomy/neows/asteroid";
 import { NeoWsApiResponse } from "../../../models/astronomy/neows/neowModel";
 import { AsteroidsGetNeows } from "../../../service/astronomy/neows/neowService";
 

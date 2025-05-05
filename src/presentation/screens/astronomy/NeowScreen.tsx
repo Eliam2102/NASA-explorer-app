@@ -7,7 +7,7 @@ import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
 import { color } from 'framer-motion';
 import ModalAsteroid from '../../../components/Modals/ModalAsteroid';
-import { Asteroid } from '../../../domain/entidades/neows/asteroid';
+import { Asteroid } from '../../../domain/entidades/astronomy/neows/asteroid';
 
 export default function AsteroidsScreen() {
   const { asteroids, loading, fecthAsteroidItems } = neowsViewModel();

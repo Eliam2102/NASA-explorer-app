@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Text, useTheme, Icon, Surface } from 'react-native-paper';
-import { Asteroid } from '../../domain/entidades/neows/asteroid';
+import { Asteroid } from '../../domain/entidades/astronomy/neows/asteroid';
 
 const CardAsteroid: React.FC<{ asteroid: Asteroid; onPress?: () => void }> = ({ asteroid, onPress }) => {
   const { colors } = useTheme();

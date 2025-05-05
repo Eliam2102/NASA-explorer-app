@@ -89,11 +89,11 @@ export default function VideoScreen() {
                 )}
                 contentContainerStyle={{
                   paddingHorizontal: 15,
-                  marginRight: 0, // Separación izquierda y derecha
+                  marginRight: 0,
                   paddingVertical: 8,
                 }}
                 onEndReached={loadMoreVideos} // Cuando llegamos al final, intentamos cargar más
-                onEndReachedThreshold={0.5} // Margen para que cargue antes de llegar al final exacto
+                onEndReachedThreshold={0.5} // Margen para que cargue antes de llegar al final y tneer un margen
             />
 
             {/* Modal que se abre para reproducir el video */}

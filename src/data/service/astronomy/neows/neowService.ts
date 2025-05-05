@@ -1,7 +1,9 @@
+import { createApiInstance } from "../../../../common/api/conection";
 import { NeoWsApiResponse } from "../../../models/astronomy/neows/neowModel";
 
 export class AsteroidsGetNeows {
   private readonly API_KEY = "dNi5zOnCpAPrKqzd6RPEzc7fIzuNMYduuT1zSvv5";
+  private readonly BASE_URL = "https://api.nasa.gov/neo/rest/v1";
 
   private validateDateRange(start_date: string, end_date: string) {
     const startDate = new Date(start_date);
@@ -22,18 +24,18 @@ export class AsteroidsGetNeows {
   async fetchAsteroids(start_date: string, end_date: string): Promise<NeoWsApiResponse> {
     this.validateDateRange(start_date, end_date);
 
-    const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${start_date}&end_date=${end_date}&api_key=${this.API_KEY}`;
+    const api = createApiInstance(this.BASE_URL);
 
     try {
-      const response = await fetch(url);
+      const response = await api.get<NeoWsApiResponse>('/feed', {
+        params: {
+          start_date,
+          end_date,
+          api_key: this.API_KEY
+        }
+      });
 
-      if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`Error fetching asteroids: ${response.status} ${response.statusText} - ${errorBody}`);
-      }
-
-      const data: NeoWsApiResponse = await response.json();
-      return data;
+      return response.data;
 
     } catch (error: any) {
       console.error("Error en fetchAsteroids:", error.message);
