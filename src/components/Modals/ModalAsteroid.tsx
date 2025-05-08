@@ -40,8 +40,8 @@ const ModalAsteroid = ({ visible, onClose, asteroid }: AsteroidModal) => {
             )}
           </ScrollView>
 
-          <Pressable onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeText}>Cerrar</Text>
+          <Pressable onPress={onClose} style={styles.topRightCloseButton}>
+            <Text style={styles.topRightCloseText}>X</Text>
           </Pressable>
         </View>
       </View>
@@ -88,20 +88,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
     borderRadius: 5,
   },
-  closeButton: {
-    marginTop: 10,
-    alignSelf: "center",
-    padding: 10,
-    backgroundColor: "#333",
-    borderRadius: 5,
-  },
-  closeText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
   link: {
     color: "blue",
     textDecorationLine: "underline",
+  },
+  topRightCloseButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16, // circular
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topRightCloseText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 

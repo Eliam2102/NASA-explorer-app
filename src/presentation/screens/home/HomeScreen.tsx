@@ -5,13 +5,24 @@ import { useNavigation } from '@react-navigation/native';
 import { DrawerNavProp } from "../../../types/types";
 import NasaCard from "../../../components/Cards/CardHome";
 import { useApodViewModelImage } from "../../viewmodels/astronmy/apod/nowImageApod";
+import { format } from "date-fns";
 
 export default function HomeScreen() {
   const navigation = useNavigation<DrawerNavProp>();
   const theme = useTheme();
   //instancia de mi vieewmodel
-  const today = new Date().toISOString().split("T")[0];
+  const today = format(new Date(), "yyyy-MM-dd");
   const { imageUrl, loading } = useApodViewModelImage(today);
+  
+  //validar la url 
+  function isValidImageUrl(url: string) {
+    return /\.(jpeg|jpg|gif|png|webp|bmp)$/i.test(url);
+  }
+  function isYouTubeUrl(url: string | null) {
+    if (!url) return false;
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  }
+  
   
 
   return (
@@ -26,7 +37,7 @@ export default function HomeScreen() {
         ) : (
           <>
             <Image
-              source={{ uri: imageUrl || 'https://via.placeholder.com/600x400.png?text=Cargando+imagen...' }}
+              source={{ uri: (isValidImageUrl(imageUrl) && !isYouTubeUrl(imageUrl)) ? imageUrl! : 'https://wallpapers.com/images/hd/earth-from-outer-space-nay511rcxz64g178.jpg' }}
               style={styles.heroImage}
               resizeMode="cover"
             />
@@ -57,7 +68,7 @@ export default function HomeScreen() {
           onPress={() => navigation.navigate("explore")}
         />
         <NasaCard 
-          title="Planetas"
+          title="Marte"
           iconName="globe"
           backgroundColor={theme.colors.primary}
           onPress={() => navigation.navigate("planets")}
