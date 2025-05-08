@@ -5,7 +5,7 @@ import HomeScreen from "../presentation/screens/home/HomeScreen";
 // import AstronomyStackNavigator from "./AstronomyStack";
 // import MultimediaTabsNavigator from "./MultimediaTabs";
 // import NewScreen from "../presentation/screens/news/NewsScreen";
-// import PlanetsScreen from "../presentation/screens/planets/PlanetsScreen";
+// import PlanetsScreen from '../presentation/screens/planets/PlanetsScreen';
 // import MoreExlporerScreen from "../presentation/screens/explorer/MoreExplorerScreen";
 
 // Tipado de las rutas del stack que se usará dentro del Drawer
@@ -14,7 +14,7 @@ export type RootStackParamList = {
   AstronomyScreen: undefined;
   MultimediaScreen: undefined;
   NoticiasScreen: undefined;
-  PlanetasScreen: undefined;
+  PlanetsScreen: undefined;
   ExplorarScreen: undefined;
 };
 
