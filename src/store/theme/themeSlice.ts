@@ -16,8 +16,11 @@ const themeSlice = createSlice({
     toggleTheme(state) {
       state.isDark = !state.isDark;
     },
+    setTheme(state, action: { payload: boolean }) {
+      state.isDark = action.payload;
+    }, //agreo qeu esta qeu espara setear el tema con respecto  a la respuesta de epic
   },
 });
 
-export const { toggleTheme } = themeSlice.actions;
+export const { toggleTheme, setTheme } = themeSlice.actions;
 export default themeSlice.reducer;
