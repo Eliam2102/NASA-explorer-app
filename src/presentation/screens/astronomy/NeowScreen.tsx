@@ -5,7 +5,6 @@ import { neowsViewModel, useInitialDateRange } from '../../viewmodels/astronmy/n
 import CardAsteroid from '../../../components/Cards/CardAsteroid';
 import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
-import { color } from 'framer-motion';
 import ModalAsteroid from '../../../components/Modals/ModalAsteroid';
 import { Asteroid } from '../../../domain/entidades/astronomy/neows/asteroid';
 
