@@ -18,18 +18,13 @@ const AppContent = () => {
 
   const { fetchEpicImages } = useEpicViewModel();
 
-  const checkIfNight = (dateString: string): boolean => {
-    const hour = new Date(dateString).getHours(); // local time
-    return hour < 6 || hour >= 18;
-  };
 
   useEffect(() => {
     const getEpicAndSetTheme = async () => {
-      const images = await fetchEpicImages();
-      if (images && images.length > 0) {
-        const isNight = checkIfNight(images[0].date);
-        dispatch(setTheme(isNight));
-      }
+      await fetchEpicImages(); // solo obtiene imágenes
+      const currentHour = new Date().getHours(); // hora local del sistema
+      const isNight = currentHour < 6 || currentHour >= 18;
+      dispatch(setTheme(isNight)); // actualiza el tema en Redux
     };
     getEpicAndSetTheme();
   }, []);

@@ -3,6 +3,7 @@ import { EpicImage } from "../../../domain/entidades/theme/epicTheme";
 import { GetEpicImageUseCase } from "../../../domain/useCases/epic/getEpicImageUseCase";
 import { EpicThemeRepositoryImpl } from "../../../data/repository_impl/epic/epicThemeRepositoryImpl";
 
+
 export const useEpicViewModel = () => {
   const [epicImages, setEpicImages] = useState<EpicImage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -24,17 +25,17 @@ export const useEpicViewModel = () => {
         setTheme(isNight ? "dark" : "light");
       }
 
-      return response; // ✅ ahora sí retorna correctamente
+      return response;
     } catch (error) {
       console.error("❌ Error al obtener imágenes de EPIC: ", error);
-      return []; // ⚠️ importante retornar un array vacío en caso de error
+      return []; 
     } finally {
       setLoading(false);
     }
   };
 
-  const checkIfNight = (dateString: string): boolean => {
-    const hour = new Date(dateString).getUTCHours(); // puedes cambiar a .getHours() si prefieres local
+  const checkIfNight = (date: string): boolean => {
+    const hour = new Date().getHours(); 
     return hour < 6 || hour >= 18;
   };
 
