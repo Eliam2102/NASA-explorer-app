@@ -1,8 +1,11 @@
 import React from "react";
 import { Modal, Text, View, ScrollView, StyleSheet, Pressable, Linking } from "react-native";
 import { AsteroidModal } from "../interfaces/modalAsteroid";
+import { useTheme } from "react-native-paper";
+import { color } from "framer-motion";
 
 const ModalAsteroid = ({ visible, onClose, asteroid }: AsteroidModal) => {
+  const theme = useTheme();
   return (
     <Modal
       visible={visible}
@@ -11,22 +14,22 @@ const ModalAsteroid = ({ visible, onClose, asteroid }: AsteroidModal) => {
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <Text style={styles.title}>Nombre: <Text>{asteroid.name}</Text></Text>
-            <Text style={styles.label}>ID: <Text style={styles.value}>{asteroid.id}</Text></Text>
-            <Text style={styles.label}>Magnitud absoluta: <Text style={styles.value}>{asteroid.absoluteMagnitude}</Text></Text>
-            <Text style={styles.label}>¿Es peligroso?: <Text style={styles.value}>{asteroid.isHazardous ? "Sí" : "No"}</Text></Text>
-            <Text style={styles.label}>Diámetro (km): <Text style={styles.value}>{asteroid.diameterKm.min} - {asteroid.diameterKm.max}</Text></Text>
-            <Text style={styles.label}>NASA URL:{" "}<Text style={[styles.value, styles.link]}onPress={() => Linking.openURL(asteroid.nasaUrl)}>{asteroid.nasaUrl}</Text></Text>
+        <View style={[styles.modalContainer, {backgroundColor: theme.colors.surface}]}>
+          <ScrollView contentContainerStyle={[styles.contentContainer, {backgroundColor: theme.colors.surface}]}>
+            <Text style={[styles.title, {color: theme.colors.onSurface}]}>Nombre: <Text>{asteroid.name}</Text></Text>
+            <Text style={[styles.label,  {color: theme.colors.onSurface}]}>ID: <Text style={[styles.value,  {color: theme.colors.onSurface}]}>{asteroid.id}</Text></Text>
+            <Text style={[styles.label,  {color: theme.colors.onSurface}]}>Magnitud absoluta: <Text style={[styles.value,  {color: theme.colors.onSurface}]}>{asteroid.absoluteMagnitude}</Text></Text>
+            <Text style={[styles.label,  {color: theme.colors.onSurface}]}>¿Es peligroso?: <Text style={[styles.value,  {color: theme.colors.onSurface}]}>{asteroid.isHazardous ? "Sí" : "No"}</Text></Text>
+            <Text style={[styles.label,  {color: theme.colors.onSurface}]}>Diámetro (km): <Text style={[styles.value, {color: theme.colors.onSurface}]}>{asteroid.diameterKm.min} - {asteroid.diameterKm.max}</Text></Text>
+            <Text style={[styles.label, {color: theme.colors.onSurface}]}>NASA URL:{" "}<Text style={[styles.value, styles.link]}onPress={() => Linking.openURL(asteroid.nasaUrl)}>{asteroid.nasaUrl}</Text></Text>
 
-            <Text style={styles.subTitle}>Aproximaciones cercanas:</Text>
+            <Text style={[styles.subTitle,  {color: theme.colors.onSurface}]}>Aproximaciones cercanas:</Text>
             {asteroid.closeApproaches.map((approach, index) => (
-              <View key={index} style={styles.approachContainer}>
-                <Text>Fecha: {approach.date}</Text>
-                <Text>Velocidad (km/s): {approach.velocityKmPerSecond}</Text>
-                <Text>Distancia mínima (km): {approach.missDistanceKm}</Text>
-                <Text>Cuerpo orbitado: {approach.orbitingBody}</Text>
+              <View key={index} style={[styles.approachContainer, {backgroundColor: theme.colors.surface}]}>
+                <Text style={[styles.label, {color: theme.colors.onSurface}]}>Fecha: {approach.date}</Text>
+                <Text style={[styles.label, {color: theme.colors.onSurface}]}>Velocidad (km/s): {approach.velocityKmPerSecond}</Text>
+                <Text style={[styles.label, {color: theme.colors.onSurface}]}>Distancia mínima (km): {approach.missDistanceKm}</Text>
+                <Text style={[styles.label, {color: theme.colors.onSurface}]}>Cuerpo orbitado: {approach.orbitingBody}</Text>
               </View>
             ))}
 

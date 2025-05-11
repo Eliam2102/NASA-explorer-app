@@ -26,7 +26,7 @@ export const useDonkiViewModel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const startDate = format(subDays(new Date(), 3), 'yyyy-MM-dd');
+  const startDate = format(subDays(new Date(), 30), 'yyyy-MM-dd');
   const endDate = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {

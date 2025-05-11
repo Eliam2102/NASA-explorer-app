@@ -9,8 +9,11 @@ import ModalAsteroid from '../../../components/Modals/ModalAsteroid';
 import { Asteroid } from '../../../domain/entidades/astronomy/neows/asteroid';
 import { showMessage } from 'react-native-flash-message';
 import { useTheme } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function AsteroidsScreen() {
+  const navigation = useNavigation();
   //instancia del hook de thema de paper
   const theme = useTheme();
   //metodo del viewmodel
@@ -74,9 +77,17 @@ const handleCloseModal = () => {
 
   return (
     <View style={styles.container}>
-      <View>
-      <Text style={[{color: theme.colors.onBackground}]}>Objetos Cercanos a la Tierrra</Text> 
-      </View>
+      <View style={styles.header}>
+          <Text style={[styles.headerTitle, { color: theme.colors.onBackground }]}>
+            Objetos Cercanos a la Tierra
+          </Text>
+         <TouchableOpacity
+          style={[styles.backButton, { backgroundColor: theme.colors.surface }]}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color={theme.colors.onSurface} />
+        </TouchableOpacity>
+        </View>
 
       {/* Botones para seleccionar fechas */}
       <View style={styles.dateSelectors}>
@@ -242,4 +253,24 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
+  header: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 12,
+},
+headerTitle: {
+  fontSize: 18,
+  fontWeight: 'bold',
+},
+backButton: {
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderRadius: 8,
+  elevation: 2,
+},
+backButtonText: {
+  fontSize: 14,
+  fontWeight: '600',
+},
 });

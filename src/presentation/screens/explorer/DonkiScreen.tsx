@@ -1,24 +1,21 @@
 import React from 'react';
-import {View,Text,StyleSheet,ActivityIndicator,FlatList,SafeAreaView,ScrollView,Linking,TouchableOpacity,} from 'react-native';
+import {View,Text,StyleSheet,FlatList,SafeAreaView,ScrollView,Linking,TouchableOpacity} from 'react-native';
 import { useDonkiViewModel } from '../../viewmodels/explorer/donki/donkiViewModel';
-import { GeomagneticStorm } from '../../../domain/entidades/explore/donki/geomagnetic';
-import { SpaceWeatherAlert } from '../../../domain/entidades/explore/donki/notification';
-import { RadiationEvent } from '../../../domain/entidades/explore/donki/radiation';
-import { SolarFlare } from '../../../domain/entidades/explore/donki/solar';
 import { useTheme } from 'react-native-paper';
 import LoadingOverlay from '../../../components/loading/Loading';
-import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
+import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
+import { color } from 'framer-motion';
 
-
+// Función para dar formato legible a las fechas
 const formatDate = (date: Date | string) => {
   const d = new Date(date);
   return d.toLocaleString();
 };
 
-const isValidUrl = (url: string) => {
-  return /^https?:\/\//i.test(url);
-};
+// Valido si el string es una URL válida
+const isValidUrl = (url: string) => /^https?:\/\//i.test(url);
 
+// Componente reutilizable para mostrar el enlace de la fuente
 const SourceLink = ({ source }: { source: string }) =>
   isValidUrl(source) ? (
     <TouchableOpacity onPress={() => Linking.openURL(source)}>
@@ -28,49 +25,103 @@ const SourceLink = ({ source }: { source: string }) =>
     <Text style={styles.cardText}>Fuente: {source}</Text>
   );
 
-const StormCard = ({ item }: { item: GeomagneticStorm }) => (
-  <View style={styles.card}>
-    <Text style={styles.cardTitle}>Tormenta Kp{item.kpIndex}</Text>
-    <Text style={styles.cardText}>Inicio: {formatDate(item.startTime)}</Text>
-    <SourceLink source={item.source} />
-  </View>
-);
+// Tarjeta para mostrar tormentas geomagnéticas
+const StormCard = ({ item }: { item: any }) => {
+  const theme = useTheme();
 
-const AlertCard = ({ item }: { item: SpaceWeatherAlert }) => (
-  <View style={styles.card}>
-    <Text style={styles.cardTitle}>{item.type}</Text>
-    <Text style={styles.cardText}>Emitida: {formatDate(item.issueTime)}</Text>
-    <SourceLink source={item.source} />
-    <Text style={styles.cardText} numberOfLines={4}>Mensaje: {item.message}</Text>
-  </View>
-);
+  return (
+    <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+      <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+        Tormenta Kp{item.kpIndex}
+      </Text>
+      <Text style={[styles.cardText, { color: theme.colors.onSurface }]}>
+        Inicio: {formatDate(item.startTime)}
+      </Text>
+      <SourceLink source={item.source} />
+    </View>
+  );
+};
 
-const RadiationCard = ({ item }: { item: RadiationEvent }) => (
-  <View style={styles.card}>
-    <Text style={styles.cardTitle}>Radiación {item.radiationType || '-'}</Text>
-    <Text style={styles.cardText}>Inicio: {formatDate(item.start)}</Text>
-    {item.end && <Text style={styles.cardText}>Fin: {formatDate(item.end)}</Text>}
-    <SourceLink source={item.source} />
-  </View>
-);
+// Tarjeta para alertas espaciales
+const AlertCard = ({ item }: { item: any }) => {
+  const theme = useTheme();
 
-const FlareCard = ({ item }: { item: SolarFlare }) => (
-  <View style={styles.card}>
-    <Text style={styles.cardTitle}>Erupción {item.intensityClass || '-'}</Text>
-    <Text style={styles.cardText}>Inicio: {formatDate(item.start)}</Text>
-    {item.peak && <Text style={styles.cardText}>Pico: {formatDate(item.peak)}</Text>}
-    <Text style={styles.cardText}>Ubicación: {item.location || 'N/A'}</Text>
-    <SourceLink source={item.source} />
-  </View>
-);
+  return (
+    <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+      <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+        {item.type}
+      </Text>
+      <Text style={[styles.cardText, { color: theme.colors.onSurface }]}>
+        Emitida: {formatDate(item.issueTime)}
+      </Text>
+      <SourceLink source={item.source} />
+      <Text
+        style={[styles.cardText, { color: theme.colors.onSurface }]}
+        numberOfLines={4}
+      >
+        Mensaje: {item.message}
+      </Text>
+    </View>
+  );
+};
 
+// Tarjeta para erupciones solares
+const FlareCard = ({ item }: { item: any }) => {
+  const theme = useTheme();
+
+  return (
+    <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+      <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+        Erupción {item.intensityClass || '-'}
+      </Text>
+      <Text style={[styles.cardText, { color: theme.colors.onSurface }]}>
+        Inicio: {formatDate(item.start)}
+      </Text>
+      {item.peak && (
+        <Text style={[styles.cardText, { color: theme.colors.onSurface }]}>
+          Pico: {formatDate(item.peak)}
+        </Text>
+      )}
+      <Text style={[styles.cardText, { color: theme.colors.onSurface }]}>
+        Ubicación: {item.location || 'N/A'}
+      </Text>
+      <SourceLink source={item.source} />
+    </View>
+  );
+};
+
+// Tarjeta para eventos de radiación
+const RadiationCard = ({ item }: { item: any }) => {
+  const theme = useTheme();
+
+  return (
+    <View style={[styles.card, {backgroundColor: theme.colors.surface}]}>
+      <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+        Radiación {item.radiationType || '-'}
+      </Text>
+      <Text style={[styles.cardText, { color: theme.colors.onSurface }]}>
+        Inicio: {formatDate(item.start)}
+      </Text>
+      {item.end && (
+        <Text style={[styles.cardText, { color: theme.colors.onSurface }]}>
+          Fin: {formatDate(item.end)}
+        </Text>
+      )}
+      <SourceLink source={item.source} />
+    </View>
+  );
+};
+
+
+// Renderiza cada sección del scroll (alertas, tormentas, etc.)
 const renderSection = (
   title: string,
   data: any[],
-  CardComponent: React.FC<{ item: any }>
+  CardComponent: React.FC<{ item: any }>,
+  titleColor: string
 ) => (
   <View style={styles.section}>
-    <Text style={styles.sectionTitle}>{title}</Text>
+    <Text style={[styles.sectionTitle, { color: titleColor }]}>{title}</Text>
     {data.length === 0 ? (
       <Text style={styles.emptyText}>No hay eventos</Text>
     ) : (
@@ -86,18 +137,20 @@ const renderSection = (
   </View>
 );
 
+// Componente principal de la pantalla DONKI
 export default function DonkiScreen() {
   const theme = useTheme();
+  // Obtengo los datos desde el viewModel con estado de carga y errores
   const { alerts, storms, radiation, solarFlares, loading, error } = useDonkiViewModel();
 
+  // Si está cargando, muestro overlay con animación
   if (loading) {
     return (
-      <>
-      <LoadingOverlay visible={true} animationSource={LoadingAnimation}/>
-      </>
+      <LoadingOverlay visible={true} animationSource={LoadingAnimation} />
     );
   }
 
+  // Si hay error, lo muestro centrado en pantalla
   if (error) {
     return (
       <View style={styles.center}>
@@ -106,19 +159,23 @@ export default function DonkiScreen() {
     );
   }
 
+  // Render principal con scroll vertical y secciones horizontales
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: theme.colors.background}]}>
-      <Text style={[styles.title, {color: theme.colors.onBackground}]}>☄️ Eventos Espaciales Recientes </Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.title, { color: theme.colors.onBackground }]}>
+        ☄️ Eventos Espaciales Recientes
+      </Text>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {renderSection('🔔 Alertas de Clima Espacial', alerts, AlertCard)}
-        {renderSection('🌪️ Tormentas Geomagnéticas', storms, StormCard)}
-        {renderSection('☢️ Eventos de Radiación', radiation, RadiationCard)}
-        {renderSection('☀️ Erupciones Solares', solarFlares, FlareCard)}
+        {renderSection('🔔 Alertas de Clima Espacial', alerts, AlertCard, theme.colors.onBackground)}
+        {renderSection('🌪️ Tormentas Geomagnéticas', storms, StormCard, theme.colors.onBackground)}
+        {renderSection('☢️ Eventos de Radiación', radiation, RadiationCard, theme.colors.onBackground)}
+        {renderSection('☀️ Erupciones Solares', solarFlares, FlareCard, theme.colors.onBackground)}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+// Estilos para la pantalla y los componentes
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -137,7 +194,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   card: {
-    backgroundColor: '#F1F5F9', // gris suave
+    backgroundColor: '#F1F5F9',
     borderRadius: 20,
     padding: 20,
     marginRight: 16,
@@ -179,12 +236,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor: '#F8FAFC',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#64748B',
-    textAlign: 'center',
   },
   errorText: {
     fontSize: 16,

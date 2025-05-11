@@ -7,7 +7,7 @@ import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
 import { SearchFilters } from '../../../components/searchFilters/handlerSeacrhFilters';
 import CardThumbnail from '../../../components/Cards/CardThummbnail';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { color } from 'framer-motion';
+
 
 export default function VideoScreen() {
     const theme = useTheme(); // Usamos el tema para mantener los colores coherentes

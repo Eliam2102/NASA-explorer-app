@@ -31,19 +31,6 @@ export default function DrawerNavigation() {
         },
         drawerActiveTintColor: colors.primary,
         drawerInactiveTintColor: colors.text,
-        headerRight: () =>
-          navigation.canGoBack() ? (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ marginRight: 16 }}
-            >
-              <FontAwesome5
-                name="arrow-left"
-                size={20}
-                color={colors.text || colors.card}
-              />
-            </TouchableOpacity>
-          ) : null, //aqui deje null por si no se puede
       })}
     >
       <Drawer.Screen
