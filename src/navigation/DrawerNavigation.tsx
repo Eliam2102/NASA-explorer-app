@@ -10,48 +10,41 @@ import MultimediaTabsNavigator from "./MultimediaTabs";
 import SettingsScreen from "../presentation/screens/config/SettingsScreen";
 import PlanetStackNavigator from "./PlanetsStack";
 import ExploreNavigator from "./XploreMore";
+import { TouchableOpacity } from "react-native";
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigation() {
-  const { colors } = useTheme(); // colores dinámicos según tema
+  const { colors } = useTheme(); 
 
   return (
-    <Drawer.Navigator 
+    <Drawer.Navigator
       initialRouteName="index"
       detachInactiveScreens={true}
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         headerStyle: {
           backgroundColor: colors.primary,
         },
-        //modifique la interface de rect theme para poder implementar el onPrimary,
-        //ya que solo aceptaba el primary, si no es recomenado simplemento ajusto 
-        //por otro color que quede dentro
-      //   interface NativeTheme {
-      //     dark: boolean;
-      //     colors: {
-      //         onPrimary: string;
-      //         primary: string;
-      //         background: string;
-      //         card: string;
-      //         text: string;
-      //         border: string;
-      //         notification: string;
-      //     };
-      //     fonts: {
-      //         regular: FontStyle;
-      //         medium: FontStyle;
-      //         bold: FontStyle;
-      //         heavy: FontStyle;
-      //     };
-      // }
-      headerTintColor: colors.onPrimary || colors.card,
+        headerTintColor: colors.text || colors.card,
         drawerStyle: {
           backgroundColor: colors.background,
         },
         drawerActiveTintColor: colors.primary,
         drawerInactiveTintColor: colors.text,
-      }}
+        headerRight: () =>
+          navigation.canGoBack() ? (
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={{ marginRight: 16 }}
+            >
+              <FontAwesome5
+                name="arrow-left"
+                size={20}
+                color={colors.text || colors.card}
+              />
+            </TouchableOpacity>
+          ) : null, //aqui deje null por si no se puede
+      })}
     >
       <Drawer.Screen
         name="index"

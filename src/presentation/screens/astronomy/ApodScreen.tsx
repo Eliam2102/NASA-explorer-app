@@ -11,6 +11,8 @@ import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
 import ModalApod from '../../../components/Modals/ModalApod';
 import { ApodItem } from '../../../domain/entidades/astronomy/apod/apodItem';
+import { Ionicons } from '@expo/vector-icons';
+
 
 
 // Declaro mi función JSX para el componente ApodScreen
@@ -109,25 +111,60 @@ const handleDateChange = (event: any, date?: Date) => {
 
         {/* Date Picker */}
         <View style={styles.dateContainer}>
-          <Text style={[styles.dateLabel, { color: theme.colors.primary }]}>Selecciona una fecha:</Text>
-          <TouchableOpacity
-            onPress={() => setShowPicker(true)}
-            style={[styles.dateButton, { backgroundColor: theme.colors.primary }]}
-          >
-            <Text style={[styles.dateButtonText, { color: theme.colors.onSurface }]}>
-              {formatDate(selectedDate)}
-            </Text>
-          </TouchableOpacity>
+          {/* Date Picker */}
+          <View style={styles.dateContainer}>
+            <Text style={[styles.dateLabel, { color: theme.colors.primary }]}>Selecciona una fecha:</Text>
 
-          {showPicker && (
-            <DateTimePicker
-              mode="date"
-              value={selectedDate}
-              display="default"
-              maximumDate={new Date()}
-              onChange={handleDateChange}
-            />
-          )}
+            {Platform.OS === 'web' ? (
+              <input
+                type="date"
+                value={formatDate(selectedDate)}
+                max={formatDate(new Date())}
+                onChange={(e) => {
+                  const newDate = new Date(e.target.value);
+                  handleDateChange({ type: 'set' }, newDate);
+                }}
+                style={{
+                  padding: 12,
+                  borderRadius: 8,
+                  border: `1px solid ${theme.colors.primary}`,
+                  color: theme.colors.onBackground,
+                  backgroundColor: theme.colors.background,
+                  fontSize: 16,
+                  marginBottom: 20,
+                  width: '100%',
+                  textAlign: 'center',
+                }}
+              />
+            ) : (
+              <>
+                <TouchableOpacity
+                  onPress={() => setShowPicker(true)}
+                  style={[styles.dateButton, {
+                    backgroundColor: theme.colors.surface,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }]}
+                >
+                  <Ionicons name="calendar-outline" size={20} color={theme.colors.onSurface} style={{ marginRight: 8 }} />
+                  <Text style={[styles.dateButtonText, { color: theme.colors.onSurface }]}>
+                    {formatDate(selectedDate)}
+                  </Text>
+                </TouchableOpacity>
+
+                {showPicker && (
+                  <DateTimePicker
+                    mode="date"
+                    value={selectedDate}
+                    display="default"
+                    maximumDate={new Date()}
+                    onChange={handleDateChange}
+                  />
+                )}
+              </>
+            )}
+          </View>
         </View>
 
         {/* {loading && (
@@ -162,8 +199,8 @@ const handleDateChange = (event: any, date?: Date) => {
             />
           )}
           {/* Botón para navegar a la pantalla de NEOws */}
-          <TouchableOpacity style={styles.neowsButton} onPress={navigateToNeows}>
-            <Text style={styles.neowsButtonText}>🔭 Ver NEOws</Text>
+          <TouchableOpacity style={[styles.neowsButton, {backgroundColor: theme.colors.surface}]} onPress={navigateToNeows}>
+            <Text style={[styles.neowsButtonText, {color: theme.colors.onSurface}]}>🔭 Ver NEOws</Text>
           </TouchableOpacity>
         </ScrollView>
 
