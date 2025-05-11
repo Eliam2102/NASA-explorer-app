@@ -38,7 +38,6 @@ export class AsteroidsGetNeows {
       return response.data;
 
     } catch (error: any) {
-      console.error("Error en fetchAsteroids:", error.message);
       throw new Error(`Error en el servicio de asteroides: ${error.message}`);
     }
   }

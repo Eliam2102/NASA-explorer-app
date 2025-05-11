@@ -1,13 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions, Modal } from 'react-native';
+import { View, StyleSheet, Dimensions, Modal, Platform } from 'react-native';
 import LottieView from 'lottie-react-native';
 
 interface LoadingOverlayProps {
   visible: boolean;
-  animationSource: any; 
+  animationSource: any;
 }
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, animationSource }) => {
+  // Si la plataforma no es móvil (iOS o Android), no renderizar nada
+  if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
+    return null;
+  }
+
   return (
     <Modal
       visible={visible}
@@ -26,7 +31,8 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, animationSourc
     </Modal>
   );
 };
-const { width, height } = Dimensions.get('window');
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   overlay: {
@@ -40,6 +46,5 @@ const styles = StyleSheet.create({
     height: width * 0.4,
   },
 });
-
 
 export default LoadingOverlay;

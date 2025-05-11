@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, Button } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, Button, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; // <- nuevo import
 import { neowsViewModel, useInitialDateRange } from '../../viewmodels/astronmy/neows/neowsViewModel'; 
 import CardAsteroid from '../../../components/Cards/CardAsteroid';
@@ -7,10 +7,14 @@ import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
 import ModalAsteroid from '../../../components/Modals/ModalAsteroid';
 import { Asteroid } from '../../../domain/entidades/astronomy/neows/asteroid';
+import { showMessage } from 'react-native-flash-message';
+import { useTheme } from 'react-native-paper';
 
 export default function AsteroidsScreen() {
-  const { asteroids, loading, fecthAsteroidItems } = neowsViewModel();
-
+  //instancia del hook de thema de paper
+  const theme = useTheme();
+  //metodo del viewmodel
+  const { asteroids, loading, err, fecthAsteroidItems } = neowsViewModel();
   // estados para las fechas
   const { initialStartDate, initialEndDate } = useInitialDateRange();
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -30,6 +34,17 @@ const handleCloseModal = () => {
   useEffect(() => {
     loadAsteroids();
   }, []);
+
+  useEffect(() => {
+    if (err) {
+      showMessage({
+        message: "Error al obtener asteroides",
+        description: err,
+        type: "danger",
+        duration: 4000,
+      });
+    }
+  }, [err]);
 
   // función para cargar asteroides
   //formateando primero la fecha start_date: fecha inicio
@@ -60,21 +75,44 @@ const handleCloseModal = () => {
   return (
     <View style={styles.container}>
       <View>
-      <Text style={{color:'#ffff'}}>Objetos Cercanos a la Tierrra</Text> 
+      <Text style={[{color: theme.colors.onBackground}]}>Objetos Cercanos a la Tierrra</Text> 
       </View>
 
       {/* Botones para seleccionar fechas */}
       <View style={styles.dateSelectors}>
-        <View style={styles.buttonItem}>
-          <Button title="📅 Inicio" onPress={() => setShowStartPicker(true)} />
+          <View style={styles.buttonItem}>
+            <TouchableOpacity
+              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
+              onPress={() => setShowStartPicker(true)}
+            >
+              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
+                📅 Inicio
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.buttonItem}>
+            <TouchableOpacity
+              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
+              onPress={() => setShowEndPicker(true)}
+            >
+              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
+                📅 Fin
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.buttonItem}>
+            <TouchableOpacity
+              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
+              onPress={loadAsteroids}
+            >
+              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
+              Buscar
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.buttonItem}>
-          <Button title="📅 Fin" onPress={() => setShowEndPicker(true)} />
-        </View>
-        <View style={styles.buttonItem}>
-          <Button title="🔍 Buscar" onPress={loadAsteroids} />
-        </View>
-      </View>
 
       {/* Pickers de fecha */}
       {showStartPicker && (
@@ -172,15 +210,36 @@ const styles = StyleSheet.create({
   },
   dateSelectors: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
     paddingVertical: 10,
-    gap: 10,
+    gap: 10, // si tu versión de RN no soporta `gap`, usa marginHorizontal en buttonItem
   },
+  
   buttonItem: {
     flex: 1,
     marginHorizontal: 4,
-    borderRadius: 8,
-    overflow: 'hidden',
+  },
+  
+  customButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    backgroundColor: '#ffffff10',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  
+  customButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
 });

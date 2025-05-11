@@ -19,6 +19,7 @@ export const useInitialDateRange = () => {
 export const neowsViewModel = () => {
   const [asteroids, setAsteroids] = useState<Asteroid[] | null>(null);
   const [loading, isLoading] = useState(false);
+  const [err, setError]= useState<string | null>(null);
 
   const getAsteroidsPaginatedUseCase = new GetAsteroidsPaginatedUseCase(new NeowsRepositoryImpl());
 
@@ -29,8 +30,8 @@ export const neowsViewModel = () => {
       console.log('DATE DE OBJETOS CERCANOS: ', response);
       setAsteroids(response);
       return response;
-    } catch (error) {
-      console.error('Error al obtener asteroides: ', error);
+    } catch (error: any) {
+      setError(error.message);
     } finally {
       isLoading(false);
     }
@@ -39,6 +40,7 @@ export const neowsViewModel = () => {
   return {
     asteroids,
     loading,
+    err,
     fecthAsteroidItems,
   };
 };

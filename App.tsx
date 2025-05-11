@@ -3,6 +3,7 @@ import { StatusBar } from 'react-native';
 import { Provider as ReduxProvider, useDispatch, useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
+import FlashMessage from "react-native-flash-message";
 
 import { store, RootState } from './src/store/global/store';
 import DrawerNavigation from './src/navigation/DrawerNavigation';
@@ -46,6 +47,7 @@ export default function App() {
   return (
     <ReduxProvider store={store}>
       <AppContent />
+      <FlashMessage position="top" />
     </ReduxProvider>
   );
 }

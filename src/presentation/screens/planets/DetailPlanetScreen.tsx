@@ -2,21 +2,24 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from "react-native";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { PlanetStackParamList } from "./types/types";
-import ImageViewer from "react-native-image-zoom-viewer"; // Asegúrate de importar correctamente
+import ImageViewer from "react-native-image-zoom-viewer";
+import { useTheme } from "react-native-paper";
+import { color } from "framer-motion";
 
 type DetailRouteProp = RouteProp<PlanetStackParamList, "DetailsPlanetScreen">;
 
 export default function DetailPlanetScreen() {
+  const theme = useTheme();
   const route = useRoute<DetailRouteProp>();
   const { planet } = route.params;
   const navigation = useNavigation();
   const [isImageViewerVisible, setIsImageViewerVisible] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
       {/* Botón de Regresar */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Regresar</Text>
+      <TouchableOpacity style={[styles.backButton, {backgroundColor: theme.colors.surface}]} onPress={() => navigation.goBack()}>
+        <Text style={[styles.backButtonText, {color: theme.colors.onSurface}]}>Regresar</Text>
       </TouchableOpacity>
 
       {/* Imagen clickeable */}
@@ -34,12 +37,12 @@ export default function DetailPlanetScreen() {
         />
       </Modal>
 
-      <Text style={styles.planetDescription}>Datos de la foto:</Text>
-      <Text style={styles.planetName}>{planet.name}</Text>
-      <Text style={styles.planetDescription}>Cámara: {planet.cameraName}</Text>
-      <Text style={styles.planetDescription}>Estatus: {planet.status}</Text>
-      <Text style={styles.planetDescription}>Fecha: {planet.date}</Text>
-      <Text style={styles.planetDescription}>Rover: {planet.roverName}</Text>
+      <Text style={[styles.planetDescription, {color: theme.colors.onBackground}]}>Datos de la foto:</Text>
+      <Text style={[styles.planetName, {color: theme.colors.onBackground}]}>{planet.name}</Text>
+      <Text style={[styles.planetDescription, {color: theme.colors.onBackground}]}>Cámara: {planet.cameraName}</Text>
+      <Text style={[styles.planetDescription, {color: theme.colors.onBackground}]}>Estatus: {planet.status}</Text>
+      <Text style={[styles.planetDescription, {color: theme.colors.onBackground}]}>Fecha: {planet.date}</Text>
+      <Text style={[styles.planetDescription, {color: theme.colors.onBackground}]}>Rover: {planet.roverName}</Text>
     </View>
   );
 }
