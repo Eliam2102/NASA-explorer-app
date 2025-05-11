@@ -68,7 +68,7 @@ export const SearchFilters = ({ onSearch }: Props) => {
               selectedFilter === option.key && styles.selectedOption, // solo si está seleccionado
             ]}
           >
-            <Text style={[styles.optionText, { color: theme.colors.textPrimary }]}>
+            <Text style={[styles.optionText, { color: theme.colors.onBackground }]}>
               {option.label}
             </Text>
           </TouchableOpacity>

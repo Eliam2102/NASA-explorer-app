@@ -77,7 +77,7 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch }) => {
             </Picker>
           </View>
 
-          <Button title="Buscar" onPress={handleSearch} />
+          <Button title="Buscar" onPress={handleSearch} color={theme.colors.surface} />
         </View>
       )}
     </View>

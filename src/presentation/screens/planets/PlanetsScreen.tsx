@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import {View,StyleSheet,Image,TouchableOpacity,FlatList,ActivityIndicator} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Planet } from "./interface/Planet";
 import { PlanetStackNavigationProp } from "./types/types";

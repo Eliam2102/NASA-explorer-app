@@ -1,20 +1,14 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  FlatList,
-  SafeAreaView,
-  ScrollView,
-  Linking,
-  TouchableOpacity,
-} from 'react-native';
+import {View,Text,StyleSheet,ActivityIndicator,FlatList,SafeAreaView,ScrollView,Linking,TouchableOpacity,} from 'react-native';
 import { useDonkiViewModel } from '../../viewmodels/explorer/donki/donkiViewModel';
 import { GeomagneticStorm } from '../../../domain/entidades/explore/donki/geomagnetic';
 import { SpaceWeatherAlert } from '../../../domain/entidades/explore/donki/notification';
 import { RadiationEvent } from '../../../domain/entidades/explore/donki/radiation';
 import { SolarFlare } from '../../../domain/entidades/explore/donki/solar';
+import { useTheme } from 'react-native-paper';
+import LoadingOverlay from '../../../components/loading/Loading';
+import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
+
 
 const formatDate = (date: Date | string) => {
   const d = new Date(date);
@@ -93,14 +87,14 @@ const renderSection = (
 );
 
 export default function DonkiScreen() {
+  const theme = useTheme();
   const { alerts, storms, radiation, solarFlares, loading, error } = useDonkiViewModel();
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Cargando eventos del clima espacial...</Text>
-      </View>
+      <>
+      <LoadingOverlay visible={true} animationSource={LoadingAnimation}/>
+      </>
     );
   }
 
@@ -113,8 +107,8 @@ export default function DonkiScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>☄️ Eventos Espaciales Recientes </Text>
+    <SafeAreaView style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      <Text style={[styles.title, {color: theme.colors.onBackground}]}>☄️ Eventos Espaciales Recientes </Text>
       <ScrollView showsVerticalScrollIndicator={false}>
         {renderSection('🔔 Alertas de Clima Espacial', alerts, AlertCard)}
         {renderSection('🌪️ Tormentas Geomagnéticas', storms, StormCard)}
