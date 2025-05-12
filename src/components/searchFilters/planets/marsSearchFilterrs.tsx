@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useTheme } from 'react-native-paper';
 
@@ -13,14 +13,25 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch }) => {
   const [camera, setCamera] = useState('');
   const [rover, setRover] = useState('');
   const [expanded, setExpanded] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearch = () => {
-    const filters = {
-      solDate: parseInt(solDate, 10),
-      camera,
-      rover,
-    };
-    onSearch(filters);
+  const handleSearch = async () => {
+    if (isSearching) return;
+    
+    setIsSearching(true);
+    try {
+      const filters = {
+        solDate: parseInt(solDate, 10),
+        camera,
+        rover,
+      };
+      await onSearch(filters);
+      setExpanded(false);
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -38,18 +49,20 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch }) => {
         <View style={[, {backgroundColor: theme.colors.background}]}>
           <Text style={[styles.label, {color: theme.colors.onSurface}]}>Sol Date:</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, {backgroundColor: theme.colors.surface, color: theme.colors.onSurface}]}
             value={solDate}
             onChangeText={setSolDate}
             keyboardType="numeric"
             placeholder="Ej: 1000"
+            placeholderTextColor={theme.colors.onSurface}
           />
 
           <Text style={[styles.label, {color: theme.colors.onSurface}]}>Rover:</Text>
-          <View style={styles.pickerContainer}>
+          <View style={[styles.pickerContainer, {backgroundColor: theme.colors.surface}]}>
             <Picker
               selectedValue={rover}
               onValueChange={(itemValue) => setRover(itemValue)}
+              style={{color: theme.colors.onSurface}}
             >
               <Picker.Item label="Selecciona un rover" value="" />
               <Picker.Item label="Curiosity" value="curiosity" />
@@ -59,10 +72,11 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch }) => {
           </View>
 
           <Text style={[styles.label, {color: theme.colors.onSurface}]}>Camera:</Text>
-          <View style={styles.pickerContainer}>
+          <View style={[styles.pickerContainer, {backgroundColor: theme.colors.surface}]}>
             <Picker
               selectedValue={camera}
               onValueChange={(itemValue) => setCamera(itemValue)}
+              style={{color: theme.colors.onSurface}}
             >
               <Picker.Item label="Selecciona una cámara" value="" />
               <Picker.Item label="FHAZ - Front Hazard Avoidance" value="FHAZ" />
@@ -77,7 +91,25 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch }) => {
             </Picker>
           </View>
 
-          <Button title="Buscar" onPress={handleSearch} color={theme.colors.surface} />
+          <TouchableOpacity
+            style={[
+              styles.searchButton,
+              {
+                backgroundColor: theme.colors.primary,
+                opacity: isSearching ? 0.7 : 1,
+              }
+            ]}
+            onPress={handleSearch}
+            disabled={isSearching}
+          >
+            {isSearching ? (
+              <ActivityIndicator color={theme.colors.onPrimary} />
+            ) : (
+              <Text style={[styles.searchButtonText, {color: theme.colors.onPrimary}]}>
+                Buscar
+              </Text>
+            )}
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -106,7 +138,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 4,
     marginTop: 8,
   },
@@ -117,16 +148,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 16,
-    backgroundColor: '#fff',
     marginBottom: 10,
-    color: '#333',
   },
   pickerContainer: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    backgroundColor: '#fff',
     marginBottom: 10,
+  },
+  searchButton: {
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  searchButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

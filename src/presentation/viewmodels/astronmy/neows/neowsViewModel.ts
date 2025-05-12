@@ -27,7 +27,6 @@ export const neowsViewModel = () => {
     isLoading(true);
     try {
       const response = await getAsteroidsPaginatedUseCase.execute(start_date, end_date);
-      console.log('DATE DE OBJETOS CERCANOS: ', response);
       setAsteroids(response);
       return response;
     } catch (error: any) {

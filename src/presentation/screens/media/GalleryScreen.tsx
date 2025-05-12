@@ -5,9 +5,7 @@ import { MediaViewModel } from '../../viewmodels/media/Image/ImageViewModel';
 import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
 import { SearchFilters } from '../../../components/searchFilters/handlerSeacrhFilters';
-import ImageViewer from 'react-native-image-zoom-viewer';
-import { color } from 'framer-motion';
-
+import ImageModal from '../../../components/Modals/gallery/ModalImage';
 
 //creación para manejar dos columnas indexada
 const numColumns = 2;
@@ -83,14 +81,12 @@ export default function GalleryScreen() {
         }
       />
 
-      <Modal visible={modalVisible} transparent={true} onRequestClose={() => setModalVisible(false)}>
-        <ImageViewer
-          imageUrls={imageViewerData}
-          index={currentImageIndex}
-          enableSwipeDown
-          onSwipeDown={() => setModalVisible(false)}
-        />
-      </Modal>
+      <ImageModal
+        visible={modalVisible}
+        imageUrls={imageViewerData}
+        currentIndex={currentImageIndex}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }

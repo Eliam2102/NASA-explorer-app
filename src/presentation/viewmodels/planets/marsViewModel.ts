@@ -14,6 +14,7 @@ export const MarsViewModel = () => {
     const [page, setPage] = useState(1);
     //manejo de estado de carga de más videos (para scroll infinito)
     const [hasMore, setHasMore] = useState(true);
+    const [err, setError]= useState<string | null>(null);
 
     //instancia de mi useCase
     const getPhotoMarsRoverUseCase = new GetPhotoMarsRoverUseCase(new MarsRepositoryImpl());
@@ -36,15 +37,16 @@ export const MarsViewModel = () => {
                 setMarsImage(prev => reset ? response : [...prev, ...response]);
                 setPage(currentPage + 1);
             }
-        } catch (error) {
+        } catch (error: any) {
             //aqui se atrapa algun erro y agregamos un console.erorr 
             //para poder ver cual es el error
-            console.error('Error al cargar imagénes de MarsRover: ', error);
+            setError(error.message);
+            console.error
         } finally {
             setLoading(false);
         }
     };
 
     // El return debe estar FUERA de la función fetchMarsPhotoRover
-    return { marsImage, loading, fetchMarsPhotoRover, hasMore, page };
+    return { marsImage, loading, fetchMarsPhotoRover, hasMore, page, err};
 };
