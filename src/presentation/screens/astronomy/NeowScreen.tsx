@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, Button, TouchableOpacity } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker'; // <- nuevo import
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, Button, TouchableOpacity, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 import { neowsViewModel, useInitialDateRange } from '../../viewmodels/astronmy/neows/neowsViewModel'; 
 import CardAsteroid from '../../../components/Cards/CardAsteroid';
 import LoadingOverlay from '../../../components/loading/Loading';
@@ -26,13 +26,13 @@ export default function AsteroidsScreen() {
   const [showEndPicker, setShowEndPicker] = useState(false);
   //para manejar el modal  y su estado
   const [modalVisible, setModalVisible] = useState(false);
-const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
+  const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
 
-//cerar modalf
-const handleCloseModal = () => {
-  setModalVisible(false);
-  setSelectedAsteroid(null);
-};
+  //cerar modal
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedAsteroid(null);
+  };
 
   useEffect(() => {
     loadAsteroids();
@@ -56,6 +56,65 @@ const handleCloseModal = () => {
     const startStr = startDate.toISOString().split('T')[0];
     const endStr = endDate.toISOString().split('T')[0];
     fecthAsteroidItems(startStr, endStr);
+  };
+
+  // Función para renderizar inputs de fecha según la plataforma
+  // En web usamos input type="date" nativo, en móvil usamos DateTimePicker
+  const renderDateInput = (isStartDate: boolean) => {
+    if (Platform.OS === 'web') {
+      // Para web: input date nativo del navegador
+      return (
+        <input
+          type="date"
+          value={isStartDate ? startDate.toISOString().split('T')[0] : endDate.toISOString().split('T')[0]}
+          onChange={(e) => {
+            const date = new Date(e.target.value);
+            if (date && !isNaN(date.getTime())) { // Evita fechas inválidas
+              if (isStartDate) setStartDate(date);
+              else setEndDate(date);
+            }
+          }}
+          required // ⬅️ Evita que el campo se borre completamente
+          style={{
+            padding: '12px 16px',
+            borderRadius: '8px',
+            border: `1px solid ${theme.colors.outline}`,
+            color: theme.colors.onSurface,
+            backgroundColor: theme.colors.surface,
+            fontSize: '16px',
+            marginBottom: '20px',
+            width: '100%',
+            maxWidth: '300px',
+            boxSizing: 'border-box',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            appearance: 'none', // Elimina estilos nativos del navegador
+            ':hover': {
+              borderColor: theme.colors.primary,
+              boxShadow: `0 0 0 2px ${theme.colors.primary}20`
+            },
+            ':focus': {
+              outline: 'none',
+              borderColor: theme.colors.primary,
+              boxShadow: `0 0 0 3px ${theme.colors.primary}30`
+            }
+          }}
+        />
+      );
+    } else {
+      // Para móvil: botón que activa el DateTimePicker
+      return (
+        <TouchableOpacity
+          style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
+          onPress={() => isStartDate ? setShowStartPicker(true) : setShowEndPicker(true)}
+        >
+          <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
+            📅 {isStartDate ? 'Inicio' : 'Fin'}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
   };
 
   //si esta cargando se muestra el loading
@@ -89,28 +148,14 @@ const handleCloseModal = () => {
         </TouchableOpacity>
         </View>
 
-      {/* Botones para seleccionar fechas */}
+      {/* Botones para seleccionar fechas - ahora con render condicional */}
       <View style={styles.dateSelectors}>
           <View style={styles.buttonItem}>
-            <TouchableOpacity
-              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
-              onPress={() => setShowStartPicker(true)}
-            >
-              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
-                📅 Inicio
-              </Text>
-            </TouchableOpacity>
+            {renderDateInput(true)}
           </View>
 
           <View style={styles.buttonItem}>
-            <TouchableOpacity
-              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
-              onPress={() => setShowEndPicker(true)}
-            >
-              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
-                📅 Fin
-              </Text>
-            </TouchableOpacity>
+            {renderDateInput(false)}
           </View>
 
           <View style={styles.buttonItem}>
@@ -119,13 +164,13 @@ const handleCloseModal = () => {
               onPress={loadAsteroids}
             >
               <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
-              Buscar
+                Buscar
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-      {/* Pickers de fecha */}
+      {/* Pickers de fecha (solo para móvil) */}
       {showStartPicker && (
         <DateTimePicker
           value={startDate}
@@ -254,23 +299,23 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   header: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 12,
-},
-headerTitle: {
-  fontSize: 18,
-  fontWeight: 'bold',
-},
-backButton: {
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-  elevation: 2,
-},
-backButtonText: {
-  fontSize: 14,
-  fontWeight: '600',
-},
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  backButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });

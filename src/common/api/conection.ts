@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 
-// Servicio Singleton (opcional si quieres seguir usándolo)
+// Servicio Singleton
 export class ApiService {
   private static instance: AxiosInstance | null = null;
 
@@ -20,7 +20,7 @@ export class ApiService {
   }
 }
 
-// ✅ NUEVA función para crear una instancia independiente
+//  NUEVA función para crear una instancia independiente
 export function createApiInstance(baseURL: string): AxiosInstance {
   return axios.create({
     baseURL,

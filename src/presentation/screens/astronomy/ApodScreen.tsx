@@ -125,17 +125,31 @@ const handleDateChange = (event: any, date?: Date) => {
                   handleDateChange({ type: 'set' }, newDate);
                 }}
                 style={{
-                  padding: 12,
-                  borderRadius: 8,
-                  border: `1px solid ${theme.colors.primary}`,
-                  color: theme.colors.onBackground,
-                  backgroundColor: theme.colors.background,
-                  fontSize: 16,
-                  marginBottom: 20,
-                  width: '100%',
-                  textAlign: 'center',
-                }}
-              />
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                    border: `1px solid ${theme.colors.outline}`,
+                    color: theme.colors.onSurface,
+                    backgroundColor: theme.colors.surface,
+                    fontSize: '16px',
+                    marginBottom: '20px',
+                    width: '100%',
+                    maxWidth: '300px',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    appearance: 'none', // Elimina estilos nativos del navegador
+                    ':hover': {
+                      borderColor: theme.colors.primary,
+                      boxShadow: `0 0 0 2px ${theme.colors.primary}20`
+                    },
+                    ':focus': {
+                      outline: 'none',
+                      borderColor: theme.colors.primary,
+                      boxShadow: `0 0 0 3px ${theme.colors.primary}30`
+                    }
+                  }}
+                />
             ) : (
               <>
                 <TouchableOpacity
