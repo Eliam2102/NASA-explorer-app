@@ -28,7 +28,7 @@ export default function HomeScreen() {
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Text variant="headlineLarge" style={[styles.welcomeText, { color: theme.colors.onSurface }]}>
-        Bienvenido al Universo NASA
+        Explora el universo🌠
       </Text>
 
       <View style={styles.imageWrapper}>

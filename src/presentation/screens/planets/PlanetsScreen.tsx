@@ -9,11 +9,12 @@ import { MarsPhotoRover } from "../../../domain/entidades/planets/marsRover";
 import MarsRoverFilters from "../../../components/searchFilters/planets/marsSearchFilterrs";
 import EmptyResults from "../../../components/empty/emptyResults";
 import { useTheme, Text, Surface } from "react-native-paper";
+import { showMessage } from "react-native-flash-message";
 
 export default function PlanetsScreen() {
   const theme = useTheme();
   const navigation = useNavigation<PlanetStackNavigationProp>();
-  const { marsImage, loading, fetchMarsPhotoRover, hasMore } = MarsViewModel();
+  const { marsImage, loading, fetchMarsPhotoRover, hasMore, err} = MarsViewModel();
 
   const [filters, setFilters] = useState<MarsParams>({
     solDate: 1100,
@@ -24,6 +25,20 @@ export default function PlanetsScreen() {
   useEffect(() => {
     fetchMarsPhotoRover(filters, true);
   }, [filters]);
+
+  useEffect(() => {
+    // Mostrar el mensaje de error solo si err no es null
+    if (err) {
+      showMessage({
+        message: "Error de conexión",
+        description: err,
+        type: "danger", // Tipo de mensaje
+        duration: 4000, // Duración del mensaje
+        backgroundColor: "red", // Color de fondo
+        color: "white", // Color del texto
+      });
+    }
+  }, [err]);
 
   const handlePlanetPress = (planet: Planet) => {
     navigation.navigate("DetailsPlanetScreen", { planet });
@@ -95,7 +110,7 @@ export default function PlanetsScreen() {
       <FlatList
         data={marsImage}
         renderItem={renderMarsPhoto}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => `${item.id}_${item.date}_${item.cameraName}_${index}`}
         numColumns={2}
         columnWrapperStyle={styles.planetsContainer}
         contentContainerStyle={styles.listContent}
