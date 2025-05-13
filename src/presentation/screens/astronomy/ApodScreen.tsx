@@ -138,7 +138,7 @@ const handleDateChange = (event: any, date?: Date) => {
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    appearance: 'none', // Elimina estilos nativos del navegador
+                    appearance: 'none', 
                     ':hover': {
                       borderColor: theme.colors.primary,
                       boxShadow: `0 0 0 2px ${theme.colors.primary}20`
@@ -202,6 +202,19 @@ const handleDateChange = (event: any, date?: Date) => {
                 />
               </Animated.View>
             </TouchableWithoutFeedback>
+          )}
+          {/* en modo offline se muestra si no hay datos guardados para esa fecha,
+          pero para las que si haya y se consulte esa fehca retornara la tarjeta */}
+          {!loading && !itemApod?.url && (
+           <View style={[styles.cardContainer,{ marginTop: 20, alignItems: 'center', minHeight:350,justifyContent: 'center' }]}>
+              <Ionicons name="alert-circle-outline" size={40} color={theme.colors.error} />
+              <Text style={{ fontSize: 16, color: theme.colors.onSurface, marginTop: 10 }}>
+                No hay datos disponibles para la fecha seleccionada.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.onSurface, marginTop: 10 }}>
+                Conectate para ver más
+              </Text>
+            </View>
           )}
 
 

@@ -1,0 +1,1 @@
+export const OFFLINE_KEY = 'APP_OFFLINE';
