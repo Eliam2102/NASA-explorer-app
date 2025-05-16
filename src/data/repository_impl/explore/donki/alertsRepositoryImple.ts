@@ -2,21 +2,34 @@ import { SpaceWeatherAlert } from "../../../../domain/entidades/explore/donki/no
 import { NotificationSpaceWeatherRepository } from "../../../../domain/repository/explore/donki/notification/notificationRepository";
 import { NotificationModel } from "../../../models/explore/donki/notificationModel";
 import { GetNotifications } from "../../../service/explore/donki/notificationsService";
+import { StorageService } from "../../../service/storage/storageService";
+import { mapAlertModelToEntity } from '../../../../common/mappers/alertMapper';
 
 export class NotificationSpaceWeatherRepositoryImpl implements NotificationSpaceWeatherRepository {
-  // Instancia del servicio para consultar
   private readonly service = new GetNotifications();
+  private readonly storageKey = "space_weather_alerts";
 
-  // Método para obtener las alertas del clima espacial
   async getAlerts(start_date: string, end_date: string): Promise<SpaceWeatherAlert[]> {
-    const data: NotificationModel[] = await this.service.fetchNotifications(start_date, end_date);
+    try {
+      // Intento obtener las notificaciones desde la API
+      console.log("ONLINE: Fetching notifications from API...");
 
-    return data.map((item) => ({
-      id: item.messageID,
-      type: item.messageType,
-      message: item.messageBody,
-      issueTime: new Date(item.messageIssueTime),
-      source: item.messageURL
-    }));
+      const data: NotificationModel[] = await this.service.fetchNotifications(start_date, end_date);
+
+      // Transformo los datos con el mapper
+      const mappedData: SpaceWeatherAlert[] = mapAlertModelToEntity(data);
+
+      // Guardar en caché
+      await StorageService.set(this.storageKey, mappedData);
+      return mappedData;
+    } catch (error) {
+      // En caso de error, intento obtener los datos desde la caché
+      console.error("Error al obtener datos de la API, usando caché:", error);
+      const cached = await StorageService.get<SpaceWeatherAlert[]>(this.storageKey);
+      return cached?.map(alert => ({
+        ...alert,
+        issueTime: new Date(alert.issueTime), // Convertir issueTime de string a Date
+      })) ?? []; // Devuelvo las alertas desde la caché si existe
+    }
   }
 }

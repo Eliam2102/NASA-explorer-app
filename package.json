@@ -11,9 +11,12 @@
   "dependencies": {
     "@expo-google-fonts/orbitron": "^0.3.0",
     "@expo/metro-runtime": "~4.0.1",
+    "@hookform/resolvers": "^5.0.1",
     "@lottiefiles/dotlottie-react": "^0.6.5",
+    "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-community/cli": "latest",
     "@react-native-community/datetimepicker": "8.2.0",
+    "@react-native-community/netinfo": "^11.4.1",
     "@react-native-picker/picker": "^2.11.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/drawer": "^7.3.9",
@@ -34,7 +37,9 @@
     "react": "18.3.1",
     "react-datepicker": "^8.3.0",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.56.3",
     "react-native": "0.76.9",
+    "react-native-dotenv": "^3.4.11",
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "^2.25.0",
     "react-native-image-zoom-viewer": "^3.0.1",
@@ -46,7 +51,8 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.19.13",
     "react-native-webview": "^13.13.5",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -3,11 +3,18 @@ import { MarsParams } from "../../entidades/planets/marsParams";
 import { MarsRepository } from "../../repository/planets/marsRepository";
 
 export class GetPhotoMarsRoverUseCase {
-    //inyeccion de dependicias del constructor , en este caso se usa el repositorio
-    constructor(private marsRepository: MarsRepository ){}
+  // Inyección de dependencias: online y offline
+  constructor(
+    private apiRepository: MarsRepository,
+    private offlineRepository: MarsRepository
+  ) {}
 
-    //metodo para obtener las fotos de mars
-    async execute(params: MarsParams): Promise<MarsPhotoRover[]>{
-        return this.marsRepository.getMarsPhotRover(params);
+  // Método para obtener fotos del Mars Rover según conexión
+  async execute(params: MarsParams, isOffline: boolean): Promise<MarsPhotoRover[]> {
+    if (isOffline) {
+      return this.offlineRepository.getMarsPhotRover(params);
+    } else {
+      return this.apiRepository.getMarsPhotRover(params);
     }
+  }
 }

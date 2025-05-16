@@ -31,7 +31,7 @@ export default function DetailPlanetScreen() {
       <Modal visible={isImageViewerVisible} transparent={true}>
         <ImageViewer
           imageUrls={[{ url: planet.imageUrl  ?? '' }]}
-          onClick={() => setIsImageViewerVisible(false)} // cerrar con tap
+          onClick={() => setIsImageViewerVisible(false)}
           enableSwipeDown
           onSwipeDown={() => setIsImageViewerVisible(false)}
         />

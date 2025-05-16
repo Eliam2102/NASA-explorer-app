@@ -1,58 +1,79 @@
-///import mi entidad
+// Importamos la entidad que representa un ítem multimedia (imagen, video)
 import { MediaItem } from '../../../../domain/entidades/media/mediaItem';
-// immport el hook de  useState
-import { useState } from 'react';
-// aqui va mi use case, USO EL MISMO PORUQE ES EN GENERAL PARA COnsumir media, unicmaente el parametro media_type cambia
-import { GetMediaNasaUseCase } from '../../../../domain/useCases/media/getMediaUseCase';
-//aqui import mi implemtncion de repositorio
+
+// React hooks
+import { useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../store/global/store';
+
+// UseCase y repositorios
+import { GetMediaUseCase } from '../../../../domain/useCases/media/getMediaUseCase';
 import { MediaRepositoryImpl } from '../../../../data/repository_impl/media/mediaRepositoryImpl';
-//tipado de parametros
+import { MediaOfflineRepository } from '../../../../domain/repository/media/mediaOfflineRepository';
 import { MediaSearchParams } from '../../../../domain/entidades/media/mediaSearchParams';
 
-
-//aqui ya cominezo a crear mi viewmodel 
 export const MediaVideoViewModel = () => {
-    //manejador de estado par mis videos
-    const [videos, setVideos] = useState<MediaItem[]>([]);
-    //manejador de estado para mi loading
-    const [loading, setLoading]= useState(false);
-    //manejador para la pagina de carga principal por defect
-    const [page, setPage]= useState(1);
-    //manejador de carga para videos luego de scrollear (cargas más)
-    const [hasMore, setHasMore] = useState (true);
+  const isOffline = useSelector((state: RootState) => state.offline.isOffline);
 
+  const [videos, setVideos] = useState<MediaItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    //intancia de mi use case
-    const getMediaUseCase = new GetMediaNasaUseCase(new MediaRepositoryImpl());
+  const getMediaUseCase = new GetMediaUseCase(
+    new MediaRepositoryImpl(),
+    new MediaOfflineRepository()
+  );
 
+  /**
+   * Esta función pública permite cargar los videos (y puede resetear si se requiere)
+   */
+  const fetchVideoMediaNasa = useCallback(
+    async (params: MediaSearchParams, reset = false) => {
+      if (loading) return;
 
-    //creaacion de mi funcion asyncorana en un customhook
-    const fetchVideoMediaNasa = async (params: MediaSearchParams, reset: boolean = false)=>{
-        //verificar carga inicial
-        if(loading) return; 
-        setLoading(true);
-        //aqui creo mi estrcutura de control (try catch)buena para el manejo de errores
-        try{
-            // pagina actual seteo
-            const  currentPage = reset ? 1 : page;
-            //creola respuesta para usar el metodo de mi use case
-            const response = await getMediaUseCase.execute({...params,  mediaType: 'video', page: currentPage});
-            console.log('Respuesta de videos: ', response);
-            //validaicon mediante un ciclo que no este vacio, mediante length
-            if (response.length === 0) {
-                setHasMore(false);
-              } else {
-                setVideos(prev => reset ? response : [...prev, ...response]);
-                setPage(currentPage + 1);
-              }
-        }catch(error){
-            console.error('Error al obtener videos: ', error);
-        }finally{
-            setLoading(false);
+      setLoading(true);
+      setError(null);
+
+      try {
+        const currentPage = reset ? 1 : page;
+
+        const response = await getMediaUseCase.execute(
+          { ...params, mediaType: 'video', page: currentPage },
+          isOffline
+        );
+
+        console.log('🎥 Videos recibidos:', response);
+
+        if (response.length === 0) {
+          setHasMore(false);
+        } else {
+          setVideos(prev => reset ? response : [...prev, ...response]);
+          setPage(currentPage + 1);
+          setHasMore(true);
         }
-        
-    }
-    
-    return {videos, loading, fetchVideoMediaNasa, hasMore, page}
+      } catch (error) {
+        console.error('🛑 Error al obtener videos:', error);
+        setError((error as Error).message || 'Error desconocido');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading, isOffline, page]
+  );
 
-}
+  // Opcional: puedes cargar los primeros videos aquí si quieres automáticamente
+  // useEffect(() => {
+  //   fetchVideoMediaNasa({ mediaType: 'video', page: 1 }, true);
+  // }, []);
+
+  return {
+    videos,
+    loading,
+    hasMore,
+    page,
+    error,
+    fetchVideoMediaNasa, // 👈 AHORA SÍ expuesta correctamente
+  };
+};

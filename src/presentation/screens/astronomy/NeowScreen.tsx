@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, Button, TouchableOpacity } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker'; // <- nuevo import
-import { neowsViewModel, useInitialDateRange } from '../../viewmodels/astronmy/neows/neowsViewModel'; 
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, Button, TouchableOpacity, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker'; 
+import { useNeowsViewModel, useInitialDateRange } from '../../viewmodels/astronmy/neows/neowsViewModel'; 
 import CardAsteroid from '../../../components/Cards/CardAsteroid';
 import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation  from '../../../../assets/LoadingAnimation.json'
@@ -11,32 +11,39 @@ import { showMessage } from 'react-native-flash-message';
 import { useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/global/store';
 
 export default function AsteroidsScreen() {
   const navigation = useNavigation();
-  //instancia del hook de thema de paper
   const theme = useTheme();
-  //metodo del viewmodel
-  const { asteroids, loading, err, fecthAsteroidItems } = neowsViewModel();
+  
   // estados para las fechas
   const { initialStartDate, initialEndDate } = useInitialDateRange();
   const [startDate, setStartDate] = useState(initialStartDate);
   const [endDate, setEndDate] = useState(initialEndDate);
+  const [queryDates, setQueryDates] = useState({
+    startDate: initialStartDate.toISOString().split('T')[0],
+    endDate: initialEndDate.toISOString().split('T')[0]
+  });
+  
+  //metodo del viewmodel - ahora con las fechas que se usarán para la consulta
+  const { asteroids, loading, err, refetch } = useNeowsViewModel(queryDates.startDate, queryDates.endDate);
+  
+  // estados para los pickers
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-  //para manejar el modal  y su estado
+  
+  //para manejar el modal y su estado
   const [modalVisible, setModalVisible] = useState(false);
-const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
+  const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
 
-//cerar modalf
-const handleCloseModal = () => {
-  setModalVisible(false);
-  setSelectedAsteroid(null);
-};
+  const isOffline = useSelector((state: RootState) => state.offline.isOffline);
 
-  useEffect(() => {
-    loadAsteroids();
-  }, []);
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedAsteroid(null);
+  };
 
   useEffect(() => {
     if (err) {
@@ -49,25 +56,73 @@ const handleCloseModal = () => {
     }
   }, [err]);
 
-  // función para cargar asteroides
-  //formateando primero la fecha start_date: fecha inicio
-  //end_date: fecha final par ael rango
-  const loadAsteroids = () => {
-    const startStr = startDate.toISOString().split('T')[0];
-    const endStr = endDate.toISOString().split('T')[0];
-    fecthAsteroidItems(startStr, endStr);
+  // función para cargar asteroides - ahora actualiza las fechas de consulta y luego hace refetch
+  const loadAsteroids = useCallback(() => {
+    setQueryDates({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
+  }, [startDate, endDate]);
+
+  // Este efecto se ejecutará cuando queryDates cambie (después de presionar Buscar)
+  useEffect(() => {
+    if (queryDates.startDate && queryDates.endDate) {
+      refetch();
+    }
+  }, [queryDates, refetch]);
+
+  // Función para renderizar inputs de fecha según la plataforma
+  const renderDateInput = (isStartDate: boolean) => {
+    if (Platform.OS === 'web') {
+      return (
+        <input
+          type="date"
+          value={isStartDate ? startDate.toISOString().split('T')[0] : endDate.toISOString().split('T')[0]}
+          onChange={(e) => {
+            const date = new Date(e.target.value);
+            if (date && !isNaN(date.getTime())) {
+              if (isStartDate) setStartDate(date);
+              else setEndDate(date);
+            }
+          }}
+          required
+          style={{
+            padding: '12px 16px',
+            borderRadius: '8px',
+            border: `1px solid ${theme.colors.outline}`,
+            color: theme.colors.onSurface,
+            backgroundColor: theme.colors.surface,
+            fontSize: '16px',
+            marginBottom: '20px',
+            width: '100%',
+            maxWidth: '300px',
+            boxSizing: 'border-box',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            appearance: 'none',
+          }}
+        />
+      );
+    } else {
+      return (
+        <TouchableOpacity
+          style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
+          onPress={() => isStartDate ? setShowStartPicker(true) : setShowEndPicker(true)}
+        >
+          <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
+            📅 {isStartDate ? 'Inicio' : 'Fin'}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
   };
 
-  //si esta cargando se muestra el loading
   if (loading) {
     return (
-      <>
       <LoadingOverlay visible={true} animationSource={LoadingAnimation} />
-      </>
     );
-  }
-
-  if (!asteroids) {
+  } else if (!asteroids) {
     return (
       <View style={styles.centered}>
         <Text>No se encontraron asteroides</Text>
@@ -89,43 +144,68 @@ const handleCloseModal = () => {
         </TouchableOpacity>
         </View>
 
-      {/* Botones para seleccionar fechas */}
       <View style={styles.dateSelectors}>
-          <View style={styles.buttonItem}>
-            <TouchableOpacity
-              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
-              onPress={() => setShowStartPicker(true)}
-            >
-              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
+        <View style={styles.buttonItem}>
+          {isOffline ? (
+            <View style={[styles.customButton, { backgroundColor: theme.colors.surfaceDisabled }]}>
+              <Text style={[styles.customButtonText, { color: theme.colors.onSurfaceDisabled }]}>
                 📅 Inicio
               </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.buttonItem}>
-            <TouchableOpacity
-              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
-              onPress={() => setShowEndPicker(true)}
-            >
-              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
-                📅 Fin
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.buttonItem}>
-            <TouchableOpacity
-              style={[styles.customButton, { backgroundColor: theme.colors.surface }]}
-              onPress={loadAsteroids}
-            >
-              <Text style={[styles.customButtonText, { color: theme.colors.onSurface }]}>
-              Buscar
-              </Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          ) : (
+            renderDateInput(true)
+          )}
         </View>
 
-      {/* Pickers de fecha */}
+        <View style={styles.buttonItem}>
+          {isOffline ? (
+            <View style={[styles.customButton, { backgroundColor: theme.colors.surfaceDisabled }]}>
+              <Text style={[styles.customButtonText, { color: theme.colors.onSurfaceDisabled }]}>
+                📅 Fin
+              </Text>
+            </View>
+          ) : (
+            renderDateInput(false)
+          )}
+        </View>
+
+        <View style={styles.buttonItem}>
+          <TouchableOpacity
+            style={[styles.customButton, { 
+              backgroundColor: isOffline ? theme.colors.surfaceDisabled : theme.colors.surface 
+            }]}
+            onPress={loadAsteroids}
+            disabled={isOffline}
+          >
+            <Text style={[styles.customButtonText, { 
+              color: isOffline ? theme.colors.onSurfaceDisabled : theme.colors.onSurface 
+            }]}>
+              Buscar
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {!loading && (!asteroids || asteroids.length === 0) && (
+        <View style={[styles.centered, { padding: 20 }]}>
+          <Ionicons 
+            name={isOffline ? "cloud-offline-outline" : "alert-circle-outline"} 
+            size={40} 
+            color={theme.colors.error} 
+          />
+          <Text style={{ fontSize: 16, color: theme.colors.onSurface, marginTop: 10, textAlign: 'center' }}>
+            {isOffline 
+              ? "Conéctate a internet para consultar nuevos rangos de fechas"
+              : "No se encontraron asteroides para este rango de fechas"}
+          </Text>
+          {isOffline && (
+            <Text style={{ fontSize: 14, color: theme.colors.onSurfaceVariant, marginTop: 5, textAlign: 'center' }}>
+              Solo puedes consultar rangos de fechas previamente cargados
+            </Text>
+          )}
+        </View>
+      )}
+
       {showStartPicker && (
         <DateTimePicker
           value={startDate}
@@ -149,26 +229,26 @@ const handleCloseModal = () => {
         />
       )}
 
-        <ScrollView style={{ marginTop: 16 }}>
-          {asteroids.map((asteroid) => (
-            <CardAsteroid
-              key={asteroid.id}
-              asteroid={asteroid}
-              onPress={() => {
-                setSelectedAsteroid(asteroid);
-                setModalVisible(true);
-              }}
-            />
-          ))}
-        </ScrollView>
-
-        {selectedAsteroid && (
-          <ModalAsteroid
-            visible={modalVisible}
-            onClose={handleCloseModal}
-            asteroid={selectedAsteroid}
+      <ScrollView style={{ marginTop: 16 }}>
+        {asteroids.map((asteroid) => (
+          <CardAsteroid
+            key={asteroid.id}
+            asteroid={asteroid}
+            onPress={() => {
+              setSelectedAsteroid(asteroid);
+              setModalVisible(true);
+            }}
           />
-        )}
+        ))}
+      </ScrollView>
+
+      {selectedAsteroid && (
+        <ModalAsteroid
+          visible={modalVisible}
+          onClose={handleCloseModal}
+          asteroid={selectedAsteroid}
+        />
+      )}
     </View>
   );
 }
@@ -254,23 +334,23 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   header: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 12,
-},
-headerTitle: {
-  fontSize: 18,
-  fontWeight: 'bold',
-},
-backButton: {
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-  elevation: 2,
-},
-backButtonText: {
-  fontSize: 14,
-  fontWeight: '600',
-},
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  backButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });

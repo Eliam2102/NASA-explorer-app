@@ -3,48 +3,81 @@ import {View,StyleSheet,Image,TouchableOpacity,FlatList,ActivityIndicator} from 
 import { useNavigation } from "@react-navigation/native";
 import { Planet } from "./interface/Planet";
 import { PlanetStackNavigationProp } from "./types/types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/global/store";
+// ViewModel actualizado con offline support
 import { MarsViewModel } from "../../viewmodels/planets/marsViewModel";
 import { MarsParams } from "../../../domain/entidades/planets/marsParams";
 import { MarsPhotoRover } from "../../../domain/entidades/planets/marsRover";
+
+
+// Componentes UI
 import MarsRoverFilters from "../../../components/searchFilters/planets/marsSearchFilterrs";
 import EmptyResults from "../../../components/empty/emptyResults";
-import { useTheme, Text, Surface } from "react-native-paper";
+import { useTheme, Text } from "react-native-paper";
+import { showMessage } from "react-native-flash-message";
 
 export default function PlanetsScreen() {
   const theme = useTheme();
   const navigation = useNavigation<PlanetStackNavigationProp>();
-  const { marsImage, loading, fetchMarsPhotoRover, hasMore } = MarsViewModel();
+  const isOffline = useSelector((state: RootState) => state.offline.isOffline);
 
+  // ViewModel con soporte offline
+  const {
+    marsImage,
+    loading,
+    fetchMarsPhotoRover,
+    hasMore,
+    err,
+  } = MarsViewModel();
+
+  // Estado para filtros del buscador
   const [filters, setFilters] = useState<MarsParams>({
     solDate: 1100,
     camera: "mast",
     rover: "curiosity",
   });
 
+  // Mensaje de error si ocurre
   useEffect(() => {
-    fetchMarsPhotoRover(filters, true);
-  }, [filters]);
+    if (err) {
+      showMessage({
+        message: "Error de conexión",
+        description: err,
+        type: "danger", // Tipo de mensaje
+        duration: 4000,
+        backgroundColor: "red",
+        color: "white",
+      });
+    }
+  }, [err]);
 
+  // función para manejar la selección de un planeta y navegar al detalle
   const handlePlanetPress = (planet: Planet) => {
     navigation.navigate("DetailsPlanetScreen", { planet });
   };
 
+  // función para cargar más imágenes cuando se hace scroll
   const handleLoadMore = () => {
     if (!loading && hasMore) {
       fetchMarsPhotoRover(filters);
     }
   };
 
+  // función que se llama al buscar desde el componente de filtros
   const onSearch = (selectedFilters: any) => {
     const newParams: MarsParams = {
       solDate: parseInt(selectedFilters.solDate || "1100"),
       camera: selectedFilters.camera || "fhaz",
       rover: selectedFilters.rover || "curiosity",
     };
+
     setFilters(newParams);
-    fetchMarsPhotoRover(newParams, true);
+    fetchMarsPhotoRover(newParams, true); // true → resetear página e imágenes
   };
 
+
+  // renderizado de cada tarjeta de imagen del rover
   const renderMarsPhoto = ({ item }: { item: MarsPhotoRover }) => {
     const secureUrl = item.imageUrl.startsWith("http://")
       ? item.imageUrl.replace("http://", "https://")
@@ -83,6 +116,7 @@ export default function PlanetsScreen() {
     );
   };
 
+  // renderizado del footer para mostrar un loader si se están cargando más datos
   const renderFooter = () =>
     loading ? (
       <View style={styles.loadingContainer}>
@@ -95,7 +129,9 @@ export default function PlanetsScreen() {
       <FlatList
         data={marsImage}
         renderItem={renderMarsPhoto}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) =>
+          `${item.id}_${item.date}_${item.cameraName}_${index}`
+        }
         numColumns={2}
         columnWrapperStyle={styles.planetsContainer}
         contentContainerStyle={styles.listContent}
@@ -105,7 +141,7 @@ export default function PlanetsScreen() {
         ListHeaderComponent={
           <>
             <View>
-              <MarsRoverFilters onSearch={onSearch} />
+              <MarsRoverFilters onSearch={onSearch} isOffline={isOffline}  />
             </View>
             <View style={styles.section}>
               <Text variant="headlineMedium" style={{ color: theme.colors.onBackground }}>

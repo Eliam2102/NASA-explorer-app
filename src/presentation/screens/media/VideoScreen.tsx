@@ -7,7 +7,7 @@ import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
 import { SearchFilters } from '../../../components/searchFilters/handlerSeacrhFilters';
 import CardThumbnail from '../../../components/Cards/CardThummbnail';
 import { useVideoPlayer, VideoView } from 'expo-video';
-
+import VideoPlayerModal from '../../../components/Modals/gallery/ModalVideo';
 
 export default function VideoScreen() {
     const theme = useTheme(); // Usamos el tema para mantener los colores coherentes
@@ -97,28 +97,11 @@ export default function VideoScreen() {
             />
 
             {/* Modal que se abre para reproducir el video */}
-            <Modal
-                visible={modalVisible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => {
-                    player.pause();
-                    setModalVisible(false);
-                }}
-            >
-                <View style={styles.modalContainer}>
-                    {/* Botón para cerrar el modal */}
-                    <TouchableOpacity style={styles.modalCloseArea} onPress={() => {
-                        player.pause();
-                        setModalVisible(false);
-                    }}>
-                        <Text style={styles.modalCloseText}>X</Text>
-                    </TouchableOpacity>
-                    
-                    {/* Componente que muestra el video */}
-                    <VideoView style={styles.video} player={player} />
-                </View>
-            </Modal>
+           <VideoPlayerModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            player={player}
+            />
         </View>
     );
 }

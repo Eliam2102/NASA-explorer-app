@@ -1,31 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../store/global/store";
+
 import { ApodItem } from "../../../../domain/entidades/astronomy/apod/apodItem";
 import { GetItemsApodUseCase } from "../../../../domain/useCases/astronomy/apod/getItemsApodUseCase";
 import { apodItemRepositoryImple } from "../../../../data/repository_impl/astronomy/apod/apodItemRepositoryImple";
+import { ApodItemOfflineRepository } from "../../../../domain/repository/astronomy/apod/getItemsApodOfflineRepository";
 
-export const useApodViewModel = () => {
+// instancia fuera del hook (importante para evitar recreación en cada render)
+const useCaseInstance = new GetItemsApodUseCase(
+  new apodItemRepositoryImple(),
+  new ApodItemOfflineRepository()
+);
+
+export const useApodViewModel = (date: string) => {
+  const isOffline = useSelector((state: RootState) => state.offline.isOffline);
   const [itemApod, setItemApod] = useState<ApodItem | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const getItemsApodUseCase = new GetItemsApodUseCase(new apodItemRepositoryImple());
-
-  const fetchApodItem = async (date: string) => {
+  const fetchApodItem = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await getItemsApodUseCase.execute(date);
-      console.log("📸 APOD recibido:", response);
+      const response = await useCaseInstance.execute(date, isOffline);
+      console.log("APOD recibido:", response);
       setItemApod(response);
-      return response;
     } catch (error) {
-      console.error("Error al obtener la imagen de APOD: ", error);
+      console.error("Error al obtener la imagen de APOD:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [date, isOffline]);
+
+  useEffect(() => {
+    fetchApodItem();
+  }, [fetchApodItem]);
 
   return {
     itemApod,
     loading,
-    fetchApodItem,
+    refetch: fetchApodItem,
   };
 };
