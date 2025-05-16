@@ -12,7 +12,6 @@ export function useApodViewModelImage(fecha: string) {
       const data = await service.fetchItemsApod(fecha);
       setImageUrl(data.url);
     } catch (error) {
-      console.error("Error al obtener imagen APOD", error);
     } finally {
       setLoading(false);
     }

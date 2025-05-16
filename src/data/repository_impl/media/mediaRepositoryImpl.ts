@@ -13,23 +13,37 @@ export class MediaRepositoryImpl implements MediaRepository {
     const cacheKey = this.getCacheKey(params);
 
     try {
+      // Traemos la info de la API usando los params completos (incluyendo mediaType)
       const response = await this.service.fetchItems(params);
       const rawItems = response.collection?.items ?? [];
       const items = mapMediaApiListToEntityList(rawItems);
-      // Filtrar solo imágenes para guardar
-      const imagesOnly = items.filter((item) => item.mediaType === "image");
-      await StorageService.set(cacheKey, imagesOnly);
 
-      return items;
+      // Filtramos SOLO el tipo que pide el parámetro
+      const filteredItems = params.mediaType
+        ? items.filter((item) => item.mediaType === params.mediaType)
+        : items;
+
+      // Guardamos en cache SOLO los filtrados para que no se mezclen
+      await StorageService.set(cacheKey, filteredItems);
+
+      return filteredItems;
     } catch (error) {
       console.error("Error al obtener media, usando caché:", error);
+
+      // Si hay caché, lo cargamos y filtramos también por mediaType para evitar mezclas
       const cached = await StorageService.get<MediaItem[]>(cacheKey);
-      return cached ?? [];
+      const filteredCached = params.mediaType
+        ? (cached ?? []).filter((item) => item.mediaType === params.mediaType)
+        : (cached ?? []);
+
+      return filteredCached;
     }
   }
 
   private getCacheKey(params: MediaSearchParams): string {
     const query = params.query?.toLowerCase().replace(/\s+/g, "_") ?? "general";
-    return `${this.STORAGE_PREFIX}${query}`;
+    const type = params.mediaType ?? "all";
+    // La clave depende del tipo y del query, separando imagen y video
+    return `${this.STORAGE_PREFIX}${type}_${query}`;
   }
 }

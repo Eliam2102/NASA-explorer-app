@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import {View,StyleSheet,TouchableOpacity } from 'react-native';
-import { useTheme, Text, TextInput, Surface } from 'react-native-paper';
-//props de los filstro (compoentne)
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { useTheme, Text, TextInput } from 'react-native-paper';
+
+// Tipado de las props esperadas
 interface Props {
   onSearch: (filters: any) => void;
 }
 
-//establecer formato clave valor, para las opciones filtro
+// Opciones disponibles para filtrar, cada una tiene un label y una clave
 const filterOptions = [
   { label: 'Palabra clave', key: 'query' },
   { label: 'Descripción', key: 'description' },
@@ -16,91 +18,178 @@ const filterOptions = [
   { label: 'Rango de años', key: 'yearRange' },
 ];
 
-
-//declaro mi compoente como tal
 export const SearchFilters = ({ onSearch }: Props) => {
-  // manejo del tema
   const theme = useTheme();
-  //constantes para poder mnajear el estado 
-  const [collapsed, setCollapsed] = useState(true);
-  const [selectedFilter, setSelectedFilter] = useState('query');
-  const [inputValue, setInputValue] = useState('');
-  const [yearStart, setYearStart] = useState('');
-  const [yearEnd, setYearEnd] = useState('');
 
-  //manejador de losfiltros para darle submit
-  const handleSubmit = () => {
+  // Controla si el panel de filtros está abierto o colapsado
+  const [collapsed, setCollapsed] = useState(true);
+
+  // Filtro actualmente seleccionado
+  const [selectedFilter, setSelectedFilter] = useState('query');
+
+  // Hook principal para controlar el formulario
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      inputValue: '',
+      yearStart: '',
+      yearEnd: '',
+    },
+  });
+
+  // Observamos los años ingresados para validación cruzada
+  const yearStart = watch('yearStart');
+  const yearEnd = watch('yearEnd');
+
+  // Función ejecutada al enviar el formulario
+  const onSubmit = (data: any) => {
     const filters: any = { mediaType: 'image' };
 
     if (selectedFilter === 'yearRange') {
-      if (yearStart) filters.yearStart = yearStart;
-      if (yearEnd) filters.yearEnd = yearEnd;
+      if (data.yearStart) filters.yearStart = data.yearStart;
+      if (data.yearEnd) filters.yearEnd = data.yearEnd;
     } else {
-      filters[selectedFilter] = inputValue;
+      filters[selectedFilter] = data.inputValue;
     }
 
     onSearch(filters);
-    setCollapsed(true);//este es para ocultar los filtros para cuando se realice una busqueda
+    setCollapsed(true);
+    reset(); // Limpiamos el formulario después de buscar
   };
 
   return (
     <View style={styles.container}>
+      {/* Botón para mostrar u ocultar los filtros */}
       <TouchableOpacity
-        style={[styles.toggleButton]}
+        style={styles.toggleButton}
         onPress={() => setCollapsed(!collapsed)}
       >
-        <Text style={[styles.toggleButtonText,{color: theme.colors.onSurface}]}>
+        <Text style={[styles.toggleButtonText, { color: theme.colors.onSurface }]}>
           {collapsed ? 'Mostrar filtros' : 'Ocultar filtros'}
         </Text>
       </TouchableOpacity>
 
+      {/* Contenedor de filtros, visible solo si no está colapsado */}
       {!collapsed && (
         <View style={styles.filtersContainer}>
-          <Text style={[styles.label, {color: theme.colors.primary}]}>Filtrar por:</Text>
+          <Text style={[styles.label, { color: theme.colors.primary }]}>Filtrar por:</Text>
 
+          {/* Botones de selección de filtros */}
           {filterOptions.map((option) => (
             <TouchableOpacity
-            key={option.key}
-            onPress={() => setSelectedFilter(option.key)}
-            style={[
-              styles.option,
-              { color: theme.colors.secondary }, 
-              selectedFilter === option.key && styles.selectedOption, // solo si está seleccionado
-            ]}
-          >
-            <Text style={[styles.optionText, { color: theme.colors.onBackground }]}>
-              {option.label}
-            </Text>
-          </TouchableOpacity>
+              key={option.key}
+              onPress={() => setSelectedFilter(option.key)}
+              style={[
+                styles.option,
+                selectedFilter === option.key && styles.selectedOption,
+              ]}
+            >
+              <Text style={[styles.optionText, { color: theme.colors.onBackground }]}>
+                {option.label}
+              </Text>
+            </TouchableOpacity>
           ))}
 
+          {/* Inputs según el tipo de filtro seleccionado */}
           {selectedFilter === 'yearRange' ? (
             <>
-              <TextInput
-                style={styles.input}
-                placeholder="Año de inicio"
-                keyboardType="numeric"
-                value={yearStart}
-                onChangeText={setYearStart}
+              {/* Año de inicio */}
+              <Controller
+                control={control}
+                name="yearStart"
+                rules={{
+                  pattern: {
+                    value: /^[0-9]{4}$/,
+                    message: 'Año inválido (debe ser numérico de 4 dígitos)',
+                  },
+                  validate: (value) =>
+                    !yearEnd || parseInt(value) <= parseInt(yearEnd) ||
+                    'El año de inicio debe ser menor o igual al año de fin',
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Año de inicio"
+                    keyboardType="numeric"
+                    value={value}
+                    onChangeText={onChange}
+                    error={!!errors.yearStart}
+                    mode="outlined"
+                  />
+                )}
               />
-              <TextInput
-                style={styles.input}
-                placeholder="Año de fin"
-                keyboardType="numeric"
-                value={yearEnd}
-                onChangeText={setYearEnd}
+              {errors.yearStart && (
+                <Text style={styles.errorText}>{errors.yearStart.message}</Text>
+              )}
+
+              {/* Año de fin */}
+              <Controller
+                control={control}
+                name="yearEnd"
+                rules={{
+                  pattern: {
+                    value: /^[0-9]{4}$/,
+                    message: 'Año inválido (debe ser numérico de 4 dígitos)',
+                  },
+                  validate: (value) =>
+                    !yearStart || parseInt(value) >= parseInt(yearStart) ||
+                    'El año de fin debe ser mayor o igual al año de inicio',
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Año de fin"
+                    keyboardType="numeric"
+                    value={value}
+                    onChangeText={onChange}
+                    error={!!errors.yearEnd}
+                    mode="outlined"
+                  />
+                )}
               />
+              {errors.yearEnd && (
+                <Text style={styles.errorText}>{errors.yearEnd.message}</Text>
+              )}
             </>
           ) : (
-            <TextInput
-              style={styles.input}
-              placeholder="Escriba su búsqueda"
-              value={inputValue}
-              onChangeText={setInputValue}
+            // Campo genérico para los filtros de texto
+            <Controller
+              control={control}
+              name="inputValue"
+              rules={{
+                required: 'Este campo es requerido',
+                minLength: {
+                  value: 2,
+                  message: 'Debe tener al menos 2 caracteres',
+                },
+                pattern: {
+                  value: /^[a-zA-Z0-9\s.,-áéíóúüñÁÉÍÓÚÜÑ]*$/,
+                  message: 'No se permiten caracteres especiales',
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Escriba su búsqueda"
+                  value={value}
+                  onChangeText={onChange}
+                  error={!!errors.inputValue}
+                  mode="outlined"
+                />
+              )}
             />
           )}
+          {errors.inputValue && (
+            <Text style={styles.errorText}>{errors.inputValue.message}</Text>
+          )}
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          {/* Botón para ejecutar la búsqueda */}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
             <Text style={styles.buttonText}>Buscar</Text>
           </TouchableOpacity>
         </View>
@@ -109,6 +198,7 @@ export const SearchFilters = ({ onSearch }: Props) => {
   );
 };
 
+// Estilos del componente
 const styles = StyleSheet.create({
   container: {
     padding: 10,
@@ -118,40 +208,53 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     padding: 10,
-    backgroundColor: 'transparent',
     borderRadius: 6,
-    alignItems: 'left',
+    alignItems: 'flex-start',
   },
   toggleButtonText: {
-    color: '#fff',
     fontWeight: '600',
   },
   filtersContainer: {
     marginTop: 10,
   },
-  label: { fontWeight: 'bold', marginBottom: 8 },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
   option: {
     padding: 6,
     borderRadius: 6,
     backgroundColor: '#8AB4F8',
     marginBottom: 5,
   },
-  selectedOption: { backgroundColor: '#007aff' },
-  optionText: { color: '#333' },
+  selectedOption: {
+    backgroundColor: '#007aff',
+  },
+  optionText: {
+    color: '#333',
+  },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 8,
     marginTop: 10,
     backgroundColor: '#fff',
+    height: 42, // más compacto
+    fontSize: 14,
   },
   button: {
     marginTop: 12,
     backgroundColor: '#007aff',
-    padding: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
     borderRadius: 12,
     alignItems: 'center',
   },
-  buttonText: { color: '#fff', fontWeight: '600' },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 4,
+    fontSize: 12,
+  },
 });

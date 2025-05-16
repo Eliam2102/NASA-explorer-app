@@ -1,18 +1,18 @@
-// // Redux slice ejemplo (offlineSlice.ts)
-// import { createSlice } from '@reduxjs/toolkit';
+// store/network/offlineSlice.ts
+import { createSlice } from '@reduxjs/toolkit';
 
-// const offlineSlice = createSlice({
-//   name: 'offline',
-//   initialState: { isOffline: false },
-//   reducers: {
-//     toggleOffline: state => {
-//       state.isOffline = !state.isOffline;
-//     },
-//     setOffline: (state, action) => {
-//       state.isOffline = action.payload;
-//     }
-//   }
-// });
+const offlineSlice = createSlice({
+  name: 'offline',
+  initialState: { isOffline: false, isManual: false },
+  reducers: {
+    setOffline: (state, action) => {
+      state.isOffline = action.payload;
+    },
+    setManualOffline: (state, action) => {
+      state.isManual = action.payload;
+    },
+  },
+});
 
-// export const { toggleOffline, setOffline } = offlineSlice.actions;
-// export default offlineSlice.reducer;
+export const { setOffline, setManualOffline } = offlineSlice.actions;
+export default offlineSlice.reducer;

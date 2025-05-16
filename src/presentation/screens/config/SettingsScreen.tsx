@@ -9,16 +9,17 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import NetInfo from "@react-native-community/netinfo";
 import { StorageService } from "../../../data/service/storage/storageService";
 import { THEME_KEY } from "../../../utils/constants/themeKey";
+import { useNavigation } from "@react-navigation/native";
 
 export default function SettingsScreen() {
   const dispatch = useDispatch();
   const theme = useTheme();
-
+  const navigation = useNavigation();
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const isOfflineManual = useSelector((state: RootState) => state.offline.isOffline);
+  const isOffline = useSelector((state: RootState) => state.offline.isOffline); // <- estado combinado
   const [isConnected, setIsConnected] = useState<boolean | null>(true);
 
-  // Detectar red automáticamente
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -26,7 +27,6 @@ export default function SettingsScreen() {
     return () => unsubscribe();
   }, []);
 
-  // Evaluar y establecer estado offline combinado
   useEffect(() => {
     const offlineCombined = isOfflineManual || !isConnected;
     dispatch(setOffline(offlineCombined));
@@ -40,7 +40,6 @@ export default function SettingsScreen() {
 
   const handleOfflineToggle = () => {
     const newOfflineManual = !isOfflineManual;
-    // Este estado es sólo la intención del usuario
     dispatch(setOffline(newOfflineManual));
   };
 
@@ -55,7 +54,6 @@ export default function SettingsScreen() {
             </Text>
           </View>
 
-          {/* Tema oscuro */}
           <List.Item
             title="Modo oscuro"
             description="Activa el tema oscuro"
@@ -63,7 +61,6 @@ export default function SettingsScreen() {
             right={() => <Switch value={isDark} onValueChange={handleThemeToggle} />}
           />
 
-          {/* Modo offline manual */}
           <List.Item
             title="Modo offline"
             description="Forzar modo sin conexión"
@@ -71,15 +68,14 @@ export default function SettingsScreen() {
             right={() => <Switch value={isOfflineManual} onValueChange={handleOfflineToggle} />}
           />
 
-          {/* Estado real de red (opcional, solo informativo) */}
           <List.Item
             title="Estado de red"
-            description={isConnected ? "Conectado a internet" : "Sin conexión"}
+            description={isOffline ? "Sin conexión (modo offline o sin red)" : "Conectado a internet"}
             left={props => (
               <List.Icon
                 {...props}
-                icon={isConnected ? "wifi" : "wifi-off"}
-                color={isConnected ? theme.colors.primary : theme.colors.error}
+                icon={isOffline ? "wifi-off" : "wifi"}
+                color={isOffline ? theme.colors.error : theme.colors.primary}
               />
             )}
           />
