@@ -39,5 +39,6 @@ export const useApodViewModel = (date: string) => {
     itemApod,
     loading,
     refetch: fetchApodItem,
+    isOffline,
   };
 };

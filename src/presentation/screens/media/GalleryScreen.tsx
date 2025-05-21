@@ -52,7 +52,7 @@ export default function GalleryScreen() {
     return (
       <View style={styles.emptyContainer}>
         <SearchFilters onSearch={handleSearch} />
-        <Text style={[styles.noResults, {color: theme.colors.onPrimary}]}>No se encontraron imágenes.</Text>
+        <Text style={[styles.noResults, {color: theme.colors.onBackground}]}>No se encontraron imágenes.</Text>
       </View>
     );
   }

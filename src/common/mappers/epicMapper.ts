@@ -5,6 +5,10 @@ export function mapEpicImageResponseToDomain(response: EpicImageResponse[]): Epi
   return response.map((item) => ({
     id: item.identifier,
     date: item.date,
-    imageName: item.image
+    imageName: item.image,
+    caption: item.caption,
+    centroidCoordinates: item.centroid_coordinates,
+    dscovrPosition: item.dscovr_j2000_position,
+    sunPosition: item.sun_j2000_position
   }));
 }

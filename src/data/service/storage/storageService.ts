@@ -1,8 +1,8 @@
-// src/data/storage/StorageService.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-const isWeb = Platform.OS === 'web';
+// Verifica si está en entorno web y si localStorage está disponible
+const isWeb = Platform.OS === 'web' && typeof localStorage !== 'undefined';
 
 export const StorageService = {
   async get<T>(key: string): Promise<T | null> {
@@ -11,25 +11,34 @@ export const StorageService = {
         ? localStorage.getItem(key)
         : await AsyncStorage.getItem(key);
       return json ? JSON.parse(json) : null;
-    } catch {
+    } catch (error) {
+      console.error(`StorageService.get error for key "${key}":`, error);
       return null;
     }
   },
 
   async set<T>(key: string, value: T): Promise<void> {
-    const json = JSON.stringify(value);
-    if (isWeb) {
-      localStorage.setItem(key, json);
-    } else {
-      await AsyncStorage.setItem(key, json);
+    try {
+      const json = JSON.stringify(value);
+      if (isWeb) {
+        localStorage.setItem(key, json);
+      } else {
+        await AsyncStorage.setItem(key, json);
+      }
+    } catch (error) {
+      console.error(`StorageService.set error for key "${key}":`, error);
     }
   },
 
   async remove(key: string): Promise<void> {
-    if (isWeb) {
-      localStorage.removeItem(key);
-    } else {
-      await AsyncStorage.removeItem(key);
+    try {
+      if (isWeb) {
+        localStorage.removeItem(key);
+      } else {
+        await AsyncStorage.removeItem(key);
+      }
+    } catch (error) {
+      console.error(`StorageService.remove error for key "${key}":`, error);
     }
   },
 };
