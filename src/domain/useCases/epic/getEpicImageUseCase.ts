@@ -1,14 +1,17 @@
 import { EpicImage } from "../../entidades/theme/epicTheme";
 import { EpicThemeRepository } from "../../repository/epic/epicThemeRepository";
 
-
-
 export class GetEpicImageUseCase {
-    //inyeccion del repo atraves del constructor
-    constructor (private repository: EpicThemeRepository){}
+  constructor(
+    private onlineRepository: EpicThemeRepository,
+    private offlineRepository: EpicThemeRepository
+  ) {}
 
-    //metodo para el usecase pueda obtener las imagenes
-    async execute(): Promise<EpicImage[]>{
-        return this.repository.getImageEpic();
+  async execute(isOffline: boolean): Promise<EpicImage[]> {
+    if (isOffline) {
+      return this.offlineRepository.getImageEpic();
+    } else {
+      return this.onlineRepository.getImageEpic();
     }
+  }
 }

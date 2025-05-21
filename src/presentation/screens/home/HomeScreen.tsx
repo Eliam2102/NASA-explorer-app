@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, ScrollView, Pressable } from "react-native";
 import { Text, useTheme, Surface, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from '@react-navigation/native';
@@ -6,6 +6,9 @@ import { DrawerNavProp } from "../../../types/types";
 import NasaCard from "../../../components/Cards/CardHome";
 import { useApodViewModelImage } from "../../viewmodels/astronmy/apod/nowImageApod";
 import { format } from "date-fns";
+import Animated, { FadeInDown, SlideInLeft, SlideInRight } from 'react-native-reanimated';
+import { Platform } from 'react-native';
+import ShinyText from "../../../components/Text/ShinyText";
 
 export default function HomeScreen() {
   const navigation = useNavigation<DrawerNavProp>();
@@ -13,6 +16,18 @@ export default function HomeScreen() {
   //instancia de mi vieewmodel
   const today = format(new Date(), "yyyy-MM-dd");
   const { imageUrl, loading } = useApodViewModelImage(today);
+  
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (!loading) {
+      // Espera corta antes de mostrar contenido animado
+      const timeout = setTimeout(() => {
+        setIsReady(true);
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [loading]);
   
   //validar la url 
   function isValidImageUrl(url: string) {
@@ -27,12 +42,16 @@ export default function HomeScreen() {
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Text variant="headlineLarge" style={[styles.welcomeText, { color: theme.colors.onSurface }]}>
-        Explora el universo🌠
-      </Text>
+      {Platform.OS === 'web' ? (
+        <Text variant="headlineLarge" style={[styles.welcomeText, { color: theme.colors.onSurface }]}>
+          Explora el universo
+        </Text>
+      ) : (
+        <ShinyText />
+      )}
 
       <View style={styles.imageWrapper}>
-        {loading ? (
+        {loading || !isReady ?(
           <ActivityIndicator size="large" color={theme.colors.primary} />
         ) : (
           <>
@@ -48,33 +67,64 @@ export default function HomeScreen() {
         )}
       </View>
 
-      <View style={styles.grid}>
-        <NasaCard 
-          title="Astronomía"
-          iconName="meteor"
-          backgroundColor={theme.colors.primary}
-          onPress={() => navigation.navigate("astronomy")}
-        />
-        <NasaCard 
-          title="Multimedia"
-          iconName="satellite-dish"
-          backgroundColor={theme.colors.primary}
-          onPress={() => navigation.navigate("media")}
-        />
-        <NasaCard 
-          title="Más"
-          iconName="rocket"
-          backgroundColor={theme.colors.primary}
-          onPress={() => navigation.navigate("explore")}
-        />
-        <NasaCard 
-          title="Marte"
-          iconName="globe"
-          backgroundColor={theme.colors.primary}
-          onPress={() => navigation.navigate("planets")}
-        />
-        
-      </View>
+      {Platform.OS === 'web' ? (
+          <View style={styles.grid}>
+            <NasaCard 
+              title="Astronomía"
+              iconName="meteor"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("astronomy")}
+            />
+            <NasaCard 
+              title="Multimedia"
+              iconName="satellite-dish"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("media")}
+            />
+            <NasaCard 
+              title="Más"
+              iconName="rocket"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("explore")}
+            />
+            <NasaCard 
+              title="Marte"
+              iconName="globe"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("planets")}
+            />
+          </View>
+        ) : (
+          <Animated.View
+            entering={SlideInRight.delay(200).duration(800)}
+            style={styles.grid}
+          >
+            <NasaCard 
+              title="Astronomía"
+              iconName="meteor"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("astronomy")}
+            />
+            <NasaCard 
+              title="Multimedia"
+              iconName="satellite-dish"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("media")}
+            />
+            <NasaCard 
+              title="Más"
+              iconName="rocket"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("explore")}
+            />
+            <NasaCard 
+              title="Marte"
+              iconName="globe"
+              backgroundColor={theme.colors.primary}
+              onPress={() => navigation.navigate("planets")}
+            />
+          </Animated.View>
+        )}
     </ScrollView>
   );
 }
@@ -89,10 +139,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 28,
+    fontSize: 30
   },
   imageWrapper: {
     width: '100%',
     marginBottom: 30,
+    marginTop: 40,
     position: 'relative',
     alignItems: 'center',
   },

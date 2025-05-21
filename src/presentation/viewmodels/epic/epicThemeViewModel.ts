@@ -1,25 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { EpicImage } from "../../../domain/entidades/theme/epicTheme";
 import { GetEpicImageUseCase } from "../../../domain/useCases/epic/getEpicImageUseCase";
 import { EpicThemeRepositoryImpl } from "../../../data/repository_impl/epic/epicThemeRepositoryImpl";
-
+import { EpicThemeOfflineRepository } from "../../../domain/repository/epic/epicThemeOfflineRepository";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/global/store";
 
 export const useEpicViewModel = () => {
+  const isOffline = useSelector((state: RootState) => state.offline.isOffline);
+
   const [epicImages, setEpicImages] = useState<EpicImage[]>([]);
   const [loading, setLoading] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null); // importante
+  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
 
-  const getEpicImageUseCase = new GetEpicImageUseCase(new EpicThemeRepositoryImpl());
+  // Crear instancia del use case con ambos repositorios
+  const getEpicImageUseCase = new GetEpicImageUseCase(
+    new EpicThemeRepositoryImpl(),      
+    new EpicThemeOfflineRepository() 
+  );
 
   const fetchEpicImages = async (): Promise<EpicImage[]> => {
     setLoading(true);
     try {
-      const response = await getEpicImageUseCase.execute();
-      console.log("🌍 EPIC imágenes recibidas:", response);
-
+      // Pasa isOffline al use case
+      const response = await getEpicImageUseCase.execute(isOffline);
       setEpicImages(response);
 
-      // Si hay al menos una imagen, determinamos si es noche
+      // Determina si es de noche para el tema
       if (response.length > 0) {
         const isNight = checkIfNight(response[0].date);
         setTheme(isNight ? "dark" : "light");
@@ -27,8 +34,8 @@ export const useEpicViewModel = () => {
 
       return response;
     } catch (error) {
-      console.error("❌ Error al obtener imágenes de EPIC: ", error);
-      return []; 
+      console.error("Error al obtener imágenes de EPIC:", error);
+      return [];
     } finally {
       setLoading(false);
     }
@@ -44,5 +51,6 @@ export const useEpicViewModel = () => {
     loading,
     theme,
     fetchEpicImages,
+    isOffline,
   };
 };
