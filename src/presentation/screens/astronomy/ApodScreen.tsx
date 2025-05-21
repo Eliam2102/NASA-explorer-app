@@ -3,7 +3,6 @@ import { View, StyleSheet, TouchableOpacity, ScrollView, Platform, Dimensions, M
 import { Text, useTheme } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
 import { AstronomyStackNavigationProp } from './types/types';
 import CardImage from '../../../components/Cards/CardImage';
 import { useApodViewModel } from '../../viewmodels/astronmy/apod/viewmodelAs';
@@ -13,7 +12,6 @@ import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
 import ModalApod from '../../../components/Modals/ModalApod';
 import { ApodItem } from '../../../domain/entidades/astronomy/apod/apodItem';
 import { Ionicons } from '@expo/vector-icons';
-import { RootState } from '../../../store/global/store';
 
 export default function ApodScreen() {
   const navigation = useNavigation<AstronomyStackNavigationProp>();
@@ -23,7 +21,6 @@ export default function ApodScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedApodItem, setSelectedApodItem] = useState<ApodItem | null>(null);
   const contentOpacity = useRef(new Animated.Value(0)).current;
-  const isOffline = useSelector((state: RootState) => state.offline.isOffline);
 
   // Formatear fecha para el ViewModel
   const formatDate = (date: Date) =>
@@ -32,7 +29,7 @@ export default function ApodScreen() {
   const currentFormattedDate = formatDate(selectedDate);
   
   // Usar el ViewModel con la fecha actual
-  const { itemApod, loading, refetch } = useApodViewModel(currentFormattedDate);
+  const { itemApod, loading, refetch, isOffline } = useApodViewModel(currentFormattedDate);
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -142,18 +139,18 @@ export default function ApodScreen() {
           )}
         </View>
 
-        {!loading && itemApod?.url && (
+        {!loading && (
           <TouchableWithoutFeedback onPress={() => {
             setSelectedApodItem(itemApod);
             setModalVisible(true);
           }}>
             <Animated.View style={[styles.cardContainer, { opacity: contentOpacity }]}>
               <CardImage
-                url={itemApod.url}
-                date={itemApod.date}
-                title={itemApod.title}
-                copyright={itemApod.copyright}
-                explanation={itemApod.explanation}
+                url={itemApod?.url || "https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg"}
+                date={itemApod?.date || ""}
+                title={itemApod?.title || "Sin título"}
+                copyright={itemApod?.copyright}
+                explanation={itemApod?.explanation || "No hay explicación disponible."}
                 onPress={() => {
                   setSelectedApodItem(itemApod);
                   setModalVisible(true);
@@ -163,19 +160,6 @@ export default function ApodScreen() {
           </TouchableWithoutFeedback>
         )}
 
-        {!loading && !itemApod?.url && (
-          <View style={[styles.cardContainer,{ marginTop: 20, alignItems: 'center', minHeight:350,justifyContent: 'center' }]}>
-            <Ionicons name="alert-circle-outline" size={40} color={theme.colors.error} />
-            <Text style={{ fontSize: 16, color: theme.colors.onSurface, marginTop: 10 }}>
-              No hay datos disponibles para la fecha seleccionada.
-            </Text>
-            <Text style={{ fontSize: 16, color: theme.colors.onSurface, marginTop: 10 }}>
-              {isOffline 
-                ? "Conéctate a internet para ver más" 
-                : "No hay datos para esta fecha"}
-            </Text>
-          </View>
-        )}
 
         {selectedApodItem && (
           <ModalApod

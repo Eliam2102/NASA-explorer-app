@@ -1,21 +1,47 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { CardH } from "../interfaces/Card";
 import { useTheme } from "react-native-paper";
-import { color } from 'framer-motion';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
+import { color } from "framer-motion";
 
 const NasaCard: React.FC<CardH> = ({ title, iconName, onPress, backgroundColor = '#ffffff', image }) => {
-
   const theme = useTheme();
 
+  // Animación pulsante del ícono
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withTiming(1.15, {
+        duration: 800,
+        easing: Easing.inOut(Easing.ease),
+      }),
+      -1,
+      true // reversa (va y viene)
+    );
+  }, []);
+
+  const animatedIconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.card, { backgroundColor: theme.colors.surface}]}>
+    <TouchableOpacity onPress={onPress} style={[styles.card, { backgroundColor: theme.colors.surface }]}>
       <View style={styles.content}>
         <View style={styles.iconWrapper}>
-          <FontAwesome5 name={iconName} size={28} color="#000" style={[styles.icon, {color: theme.colors.onSurface}]} />
+          <Animated.View style={animatedIconStyle}>
+            <FontAwesome5 name={iconName} size={28} color='#000' style={[styles.icon, {color: theme.colors.onSurface}]} />
+          </Animated.View>
         </View>
-        <Text style={[styles.title, {color: theme.colors.onSurface}]}>{title}</Text>
+        <Text style={[styles.title, { color: theme.colors.onSurface }]}>{title}</Text>
       </View>
 
       {image && <Image source={image} style={styles.image} />}
