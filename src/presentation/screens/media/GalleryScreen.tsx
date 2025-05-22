@@ -6,6 +6,8 @@ import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
 import { SearchFilters } from '../../../components/searchFilters/handlerSeacrhFilters';
 import ImageModal from '../../../components/Modals/gallery/ModalImage';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 //creación para manejar dos columnas indexada
 const numColumns = 2;
@@ -14,6 +16,7 @@ const screenWidth = Dimensions.get('window').width;
 //componente de pantalla en galería
 export default function GalleryScreen() {
   const theme = useTheme(); //modulo de useThem para poder usar mi tema
+  const navigation = useNavigation();
   //variables de estado
   const { images, loading, fetchImageMediaNasa, hasMore } = MediaViewModel();
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -59,6 +62,11 @@ export default function GalleryScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <TouchableOpacity style={[styles.backButton, {backgroundColor: theme.colors.surface}]} onPress={() => navigation.goBack()}>
+                <Text style={[styles.backButtonText, {color: theme.colors.onSurface}]}>
+                  <FontAwesome5 name='arrow-left' color={theme.colors.onSurface} size={20}/>
+                </Text>
+      </TouchableOpacity>
       <FlatList
         data={images}
         keyExtractor={(item, index) => `${item.id}-${index}`}
@@ -127,5 +135,19 @@ const styles = StyleSheet.create({
   footerText: {
     textAlign: 'center',
     color: '#999',
+  },
+  backButton: {
+    position: "absolute",
+    top: 12,
+    right: 18,
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

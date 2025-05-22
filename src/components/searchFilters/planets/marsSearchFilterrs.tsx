@@ -18,6 +18,13 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
   const [expanded, setExpanded] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Función para resetear todos los filtros a sus valores iniciales
+  const resetFilters = () => {
+    setSolDate('');
+    setCamera('');
+    setRover('');
+  };
+
   // función para manejar búsqueda con validación si está offline
   const handleSearch = async () => {
     if (isOffline) {
@@ -34,35 +41,51 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
 
     setIsSearching(true);
     try {
+      // Validación básica para solDate (si está vacío, usar valor por defecto 1000)
+      const parsedSolDate = solDate ? parseInt(solDate, 10) : 1000;
+      
       const filters = {
-        solDate: parseInt(solDate, 10),
+        solDate: parsedSolDate,
         camera,
         rover,
       };
       await onSearch(filters);
       setExpanded(false);
+      resetFilters(); // Limpiar filtros después de búsqueda exitosa
     } catch (error) {
       console.error('Search error:', error);
+      showMessage({
+        message: 'Error en la búsqueda',
+        description: 'No se pudieron obtener los resultados. Verifica tus filtros.',
+        type: 'danger',
+        duration: 3000,
+      });
     } finally {
       setIsSearching(false);
     }
   };
 
+  // Función para manejar el toggle del panel de filtros con validación offline
+  const handleToggleFilters = () => {
+    if (isOffline) {
+      showMessage({
+        message: 'Modo offline activado',
+        description: 'Conéctate a internet para utilizar los filtros.',
+        type: 'warning',
+        duration: 3000,
+      });
+      return;
+    }
+    setExpanded((prev) => !prev);
+  };
+
   return (
     <View style={[styles.wrapper, { backgroundColor: theme.colors.background }]}>
       {/* Botón para mostrar u ocultar filtros */}
-      <TouchableOpacity style={styles.toggleButton} onPress={() => {
-          if (isOffline) {
-            showMessage({
-              message: 'Modo offline activado',
-              description: 'Conéctate a internet para utilizar los filtros.',
-              type: 'warning',
-              duration: 3000,
-            });
-            return;
-          }
-          setExpanded((prev) => !prev);
-        }} >
+      <TouchableOpacity 
+        style={styles.toggleButton} 
+        onPress={handleToggleFilters}
+      >
         <Text style={[styles.toggleText, { color: theme.colors.onSurface }]}>
           {expanded ? 'Ocultar filtros' : 'Mostrar filtros'}
         </Text>
@@ -78,6 +101,7 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
               {
                 backgroundColor: theme.colors.surface,
                 color: theme.colors.onSurface,
+                borderColor: theme.colors.outline,
               },
             ]}
             value={solDate}
@@ -92,7 +116,10 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
           <View
             style={[
               styles.pickerContainer,
-              { backgroundColor: theme.colors.surface },
+              { 
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.outline,
+              },
               isOffline && { opacity: 0.5 }, // ← apariencia atenuada si offline
             ]}
           >
@@ -101,6 +128,7 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
               selectedValue={rover}
               onValueChange={(itemValue) => setRover(itemValue)}
               style={{ color: theme.colors.onSurface }}
+              dropdownIconColor={theme.colors.onSurface}
             >
               <Picker.Item label="Selecciona un rover" value="" />
               <Picker.Item label="Curiosity" value="curiosity" />
@@ -113,7 +141,10 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
           <View
             style={[
               styles.pickerContainer,
-              { backgroundColor: theme.colors.surface },
+              { 
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.outline,
+              },
               isOffline && { opacity: 0.5 },
             ]}
           >
@@ -122,6 +153,7 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
               selectedValue={camera}
               onValueChange={(itemValue) => setCamera(itemValue)}
               style={{ color: theme.colors.onSurface }}
+              dropdownIconColor={theme.colors.onSurface}
             >
               <Picker.Item label="Selecciona una cámara" value="" />
               <Picker.Item label="FHAZ - Front Hazard Avoidance" value="FHAZ" />
@@ -147,6 +179,7 @@ const MarsRoverFilters: React.FC<Props> = ({ onSearch, isOffline }) => {
             ]}
             onPress={handleSearch}
             disabled={isSearching || isOffline}
+            activeOpacity={0.8}
           >
             {isSearching ? (
               <ActivityIndicator color={theme.colors.onPrimary} />
@@ -171,13 +204,14 @@ const styles = StyleSheet.create({
     padding: 10,
     shadowOpacity: 0.1,
     shadowRadius: 5,
+    elevation: 2,
   },
   toggleButton: {
     alignItems: 'center',
     marginBottom: 5,
+    padding: 8,
   },
   toggleText: {
-    alignSelf: 'left',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -189,7 +223,6 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -198,16 +231,15 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     marginBottom: 10,
+    overflow: 'hidden',
   },
   searchButton: {
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
   },
   searchButtonText: {
     fontSize: 16,

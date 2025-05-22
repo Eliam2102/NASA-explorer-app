@@ -11,7 +11,7 @@ import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
 import ModalApod from '../../../components/Modals/ModalApod';
 import { ApodItem } from '../../../domain/entidades/astronomy/apod/apodItem';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 export default function ApodScreen() {
   const navigation = useNavigation<AstronomyStackNavigationProp>();
@@ -71,6 +71,11 @@ export default function ApodScreen() {
   return (
     <>
       <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <TouchableOpacity style={[styles.backButton, {backgroundColor: theme.colors.surface}]} onPress={() => navigation.goBack()}>
+            <Text style={[styles.backButtonText, {color: theme.colors.onSurface}]}>
+              <FontAwesome5 name='arrow-left' color={theme.colors.onSurface} size={20}/>
+            </Text>
+      </TouchableOpacity>
         <Text variant="headlineLarge" style={[styles.welcomeText, { color: theme.colors.primary }]}>
           Fotos Astronómicas
         </Text>
@@ -266,5 +271,19 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  backButton: {
+    position: "absolute",
+    top: 24,
+    left: 13,
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
