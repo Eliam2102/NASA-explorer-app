@@ -51,21 +51,24 @@ export default function HomeScreen() {
       )}
 
       <View style={styles.imageWrapper}>
-        {loading || !isReady ?(
+      {loading || !isReady ? (
+        // Contenedor que mantiene el espacio reservado
+        <View style={styles.placeholderImage}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-        ) : (
-          <>
-            <Image
-              source={{ uri: (isValidImageUrl(imageUrl) && !isYouTubeUrl(imageUrl)) ? imageUrl! : 'https://wallpapers.com/images/hd/earth-from-outer-space-nay511rcxz64g178.jpg' }}
-              style={styles.heroImage}
-              resizeMode="cover"
-            />
-            <Surface style={[styles.labelContainer, { backgroundColor: theme.colors.elevation.level1 }]}>
-              <Text style={[styles.labelText, { color: theme.colors.onSurface }]}>Imagen del día</Text>
-            </Surface>
-          </>
-        )}
-      </View>
+        </View>
+      ) : (
+        <>
+          <Image
+            source={{ uri: (isValidImageUrl(imageUrl) && !isYouTubeUrl(imageUrl)) ? imageUrl! : 'https://wallpapers.com/images/hd/earth-from-outer-space-nay511rcxz64g178.jpg' }}
+            style={styles.heroImage}
+            resizeMode="cover"
+          />
+          <Surface style={[styles.labelContainer, { backgroundColor: theme.colors.elevation.level1 }]}>
+            <Text style={[styles.labelText, { color: theme.colors.onSurface }]}>Imagen del día</Text>
+          </Surface>
+        </>
+      )}
+    </View>
 
       {Platform.OS === 'web' ? (
           <View style={styles.grid}>
@@ -185,4 +188,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  placeholderImage: {
+  width: '100%',
+  height: 200, // mismo alto que `heroImage`
+  borderRadius: 20,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

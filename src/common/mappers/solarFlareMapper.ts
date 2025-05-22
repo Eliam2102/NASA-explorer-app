@@ -1,5 +1,3 @@
-// infrastructure/mappers/explore/donki/solarMapper.ts
-
 import { SolarFlareModel } from '../../data/models/explore/donki/solarModel';
 import { SolarFlare } from '../../domain/entidades/explore/donki/solar';
 
