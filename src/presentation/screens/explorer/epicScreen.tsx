@@ -46,13 +46,7 @@ export default function EpicScreen() {
 
         <View style={styles.descriptionBox}>
           <Text style={[styles.descriptionText, { color: theme.colors.onBackground }]}>
-            En la sección de EPIC se obtienen imágenes satelitales del planeta Tierra.
-          </Text>
-          <Text style={[styles.descriptionText, { color: theme.colors.onBackground }]}>
-            Mediante cada una de estas imágenes se obtienen datos importantes, como lo son: fecha, coordenadas, cercanía con el sol y hora.
-          </Text>
-          <Text style={[styles.descriptionText, { color: theme.colors.onBackground }]}>
-            Ahora bien, mediante esta última se determina el horario actual y con ello se brinda el tema a la APP dependiendo de a qué hora inicie la APP.
+            En la sección EPIC se obtienen imágenes satelitales de la Tierra, a partir de las cuales se extraen datos como fecha, coordenadas, cercanía al sol y hora. Esta información se usa para determinar el horario actual y asignar un tema visual a la app según la hora de inicio.
           </Text>
         </View>
 

@@ -12,9 +12,11 @@ import PlanetStackNavigator from "./PlanetsStack";
 import ExploreNavigator from "./XploreMore";
 import { TouchableOpacity } from "react-native";
 
+
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigation() {
+  const theme = useTheme()
   const { colors } = useTheme(); 
 
   return (
@@ -25,12 +27,12 @@ export default function DrawerNavigation() {
         headerStyle: {
           backgroundColor: colors.primary,
         },
-        headerTintColor: colors.text || colors.card,
+        headerTintColor: colors.background || colors.card,
         drawerStyle: {
           backgroundColor: colors.background,
         },
         drawerActiveTintColor: colors.primary,
-        drawerInactiveTintColor: colors.text,
+        drawerInactiveTintColor: colors.primary,
       })}
     >
       <Drawer.Screen
