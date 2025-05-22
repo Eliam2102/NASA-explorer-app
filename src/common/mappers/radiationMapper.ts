@@ -1,5 +1,3 @@
-// infrastructure/mappers/explore/donki/radiationMapper.ts
-
 import { RadiationEventModel } from '../../data/models/explore/donki/radiationModel';
 import { RadiationEvent } from '../../domain/entidades/explore/donki/radiation';
 

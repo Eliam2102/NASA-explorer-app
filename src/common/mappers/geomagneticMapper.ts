@@ -1,4 +1,3 @@
-// infrastructure/mappers/explore/donki/geomagneticStormMapper.ts
 
 import { GeomagneticStormModel } from '../../data/models/explore/donki/geomagneticModel';
 import { GeomagneticStorm } from '../../domain/entidades/explore/donki/geomagnetic';
