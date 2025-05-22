@@ -4,7 +4,10 @@ import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { PlanetStackParamList } from "./types/types";
 import ImageViewer from "react-native-image-zoom-viewer";
 import { useTheme } from "react-native-paper";
-import { color } from "framer-motion";
+import { FontAwesome5 } from '@expo/vector-icons';
+
+
+
 
 type DetailRouteProp = RouteProp<PlanetStackParamList, "DetailsPlanetScreen">;
 
@@ -19,7 +22,9 @@ export default function DetailPlanetScreen() {
     <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
       {/* Botón de Regresar */}
       <TouchableOpacity style={[styles.backButton, {backgroundColor: theme.colors.surface}]} onPress={() => navigation.goBack()}>
-        <Text style={[styles.backButtonText, {color: theme.colors.onSurface}]}>Regresar</Text>
+        <Text style={[styles.backButtonText, {color: theme.colors.onSurface}]}>
+          <FontAwesome5 name='arrow-left' color={theme.colors.onSurface} size={20}/>
+        </Text>
       </TouchableOpacity>
 
       {/* Imagen clickeable */}

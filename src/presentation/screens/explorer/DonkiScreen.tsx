@@ -4,7 +4,9 @@ import { useDonkiViewModel } from '../../viewmodels/explorer/donki/donkiViewMode
 import { useTheme } from 'react-native-paper';
 import LoadingOverlay from '../../../components/loading/Loading';
 import LoadingAnimation from '../../../../assets/LoadingAnimation.json';
-import { color } from 'framer-motion';
+import { useNavigation } from '@react-navigation/native';
+import { FontAwesome5 } from '@expo/vector-icons';
+
 
 // Función para dar formato legible a las fechas
 const formatDate = (date: Date | string) => {
@@ -140,6 +142,7 @@ const renderSection = (
 // Componente principal de la pantalla DONKI
 export default function DonkiScreen() {
   const theme = useTheme();
+  const navigation = useNavigation();
   // Obtengo los datos desde el viewModel con estado de carga y errores
   const { alerts, storms, radiation, solarFlares, loading, error } = useDonkiViewModel();
 
@@ -162,8 +165,13 @@ export default function DonkiScreen() {
   // Render principal con scroll vertical y secciones horizontales
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <TouchableOpacity style={[styles.backButton, {backgroundColor: theme.colors.surface}]} onPress={() => navigation.goBack()}>
+                <Text style={[styles.backButtonText, {color: theme.colors.onSurface}]}>
+                  <FontAwesome5 name='arrow-left' color={theme.colors.onSurface} size={20}/>
+                </Text>
+      </TouchableOpacity>
       <Text style={[styles.title, { color: theme.colors.onBackground }]}>
-        ☄️ Eventos Espaciales Recientes
+        Eventos Espaciales Recientes
       </Text>
       <ScrollView showsVerticalScrollIndicator={false}>
         {renderSection('🔔 Alertas de Clima Espacial', alerts, AlertCard, theme.colors.onBackground)}
@@ -217,7 +225,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
-    transitionDuration: '150ms',
   },
   cardTitle: {
     fontSize: 18,
@@ -256,5 +263,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 20,
     marginTop: 6,
+  },
+   backButton: {
+    position: "absolute",
+    top: 24,
+    left: 13,
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

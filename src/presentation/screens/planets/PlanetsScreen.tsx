@@ -11,16 +11,20 @@ import { MarsParams } from "../../../domain/entidades/planets/marsParams";
 import { MarsPhotoRover } from "../../../domain/entidades/planets/marsRover";
 
 
+
 // Componentes UI
 import MarsRoverFilters from "../../../components/searchFilters/planets/marsSearchFilterrs";
 import EmptyResults from "../../../components/empty/emptyResults";
 import { useTheme, Text } from "react-native-paper";
 import { showMessage } from "react-native-flash-message";
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function PlanetsScreen() {
   const theme = useTheme();
   const navigation = useNavigation<PlanetStackNavigationProp>();
   const isOffline = useSelector((state: RootState) => state.offline.isOffline);
+  const [hasSearched, setHasSearched] = useState(false);
+
 
   // ViewModel con soporte offline
   const {
@@ -29,6 +33,7 @@ export default function PlanetsScreen() {
     fetchMarsPhotoRover,
     hasMore,
     err,
+    noResults
   } = MarsViewModel();
 
   // Estado para filtros del buscador
@@ -73,7 +78,8 @@ export default function PlanetsScreen() {
     };
 
     setFilters(newParams);
-    fetchMarsPhotoRover(newParams, true); // true → resetear página e imágenes
+     setHasSearched(true);
+    fetchMarsPhotoRover(newParams, true);
   };
 
 
@@ -137,10 +143,17 @@ export default function PlanetsScreen() {
         contentContainerStyle={styles.listContent}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
-        ListEmptyComponent={<EmptyResults />}
+        ListEmptyComponent={
+            noResults ? <EmptyResults /> : null
+          }
         ListHeaderComponent={
           <>
             <View>
+              <TouchableOpacity style={[styles.backButton, {backgroundColor: theme.colors.surface}]} onPress={() => navigation.goBack()}>
+                <Text style={[styles.backButtonText, {color: theme.colors.onSurface}]}>
+                  <FontAwesome5 name='arrow-left' color={theme.colors.onSurface} size={20}/>
+                </Text>
+              </TouchableOpacity>
               <MarsRoverFilters onSearch={onSearch} isOffline={isOffline}  />
             </View>
             <View style={styles.section}>
@@ -201,5 +214,19 @@ const styles = StyleSheet.create({
   filterContainer: {
     margin: 20,
     marginBottom: 5,
+  },
+   backButton: {
+    position: "absolute",
+    top: 18,
+    left: 20,
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
